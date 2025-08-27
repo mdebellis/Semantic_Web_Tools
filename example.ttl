@@ -1,0 +1,209 @@
+@prefix : <http://www.semanticweb.org/mdebe/ontologies/2025/7/untitled-ontology-1021/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/mdebe/ontologies/2025/7/untitled-ontology-1021/> .
+
+<https://michaeldebellis.com/example> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://michaeldebellis.com/example/has_covering
+<https://michaeldebellis.com/example/has_covering> rdf:type owl:ObjectProperty ;
+                                                   rdfs:label "has covering" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://michaeldebellis.com/example/Animal
+<https://michaeldebellis.com/example/Animal> rdf:type owl:Class ;
+                                             rdfs:subClassOf <https://michaeldebellis.com/example/Living_Thing> ;
+                                             rdfs:label "Animal" .
+
+
+###  https://michaeldebellis.com/example/Bark
+<https://michaeldebellis.com/example/Bark> rdf:type owl:Class ;
+                                           rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+                                           rdfs:label "Bark" .
+
+
+###  https://michaeldebellis.com/example/Bird
+<https://michaeldebellis.com/example/Bird> rdf:type owl:Class ;
+                                           rdfs:subClassOf [ owl:intersectionOf ( <https://michaeldebellis.com/example/Animal>
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                                                                                    owl:someValuesFrom <https://michaeldebellis.com/example/Feather>
+                                                                                  ]
+                                                                                ) ;
+                                                             rdf:type owl:Class
+                                                           ] ;
+                                           rdfs:label "Bird" .
+
+
+###  https://michaeldebellis.com/example/Cat
+<https://michaeldebellis.com/example/Cat> rdf:type owl:Class ;
+                                          rdfs:subClassOf <https://michaeldebellis.com/example/Mammal> ;
+                                          rdfs:label "Cat" .
+
+
+###  https://michaeldebellis.com/example/Covering
+<https://michaeldebellis.com/example/Covering> rdf:type owl:Class ;
+                                               rdfs:label "Covering" .
+
+
+###  https://michaeldebellis.com/example/Cuticle
+<https://michaeldebellis.com/example/Cuticle> rdf:type owl:Class ;
+                                              rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+                                              rdfs:label "Cuticle" .
+
+
+###  https://michaeldebellis.com/example/Dog
+<https://michaeldebellis.com/example/Dog> rdf:type owl:Class ;
+                                          rdfs:subClassOf <https://michaeldebellis.com/example/Mammal> ;
+                                          rdfs:label "Dog" .
+
+
+###  https://michaeldebellis.com/example/Feather
+<https://michaeldebellis.com/example/Feather> rdf:type owl:Class ;
+                                              rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+                                              rdfs:label "Feather" .
+
+
+###  https://michaeldebellis.com/example/Flower
+<https://michaeldebellis.com/example/Flower> rdf:type owl:Class ;
+                                             rdfs:subClassOf [ owl:intersectionOf ( <https://michaeldebellis.com/example/Plant>
+                                                                                    [ rdf:type owl:Restriction ;
+                                                                                      owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                                                                                      owl:someValuesFrom <https://michaeldebellis.com/example/Cuticle>
+                                                                                    ]
+                                                                                  ) ;
+                                                               rdf:type owl:Class
+                                                             ] ;
+                                             rdfs:label "Flower" .
+
+
+###  https://michaeldebellis.com/example/Fur
+<https://michaeldebellis.com/example/Fur> rdf:type owl:Class ;
+                                          rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+                                          rdfs:label "Fur" .
+
+
+###  https://michaeldebellis.com/example/Human
+<https://michaeldebellis.com/example/Human> rdf:type owl:Class ;
+                                            rdfs:subClassOf <https://michaeldebellis.com/example/Mammal> ;
+                                            rdfs:label "Human" .
+
+
+###  https://michaeldebellis.com/example/Larch
+<https://michaeldebellis.com/example/Larch> rdf:type owl:Class ;
+                                            rdfs:subClassOf <https://michaeldebellis.com/example/Tree> ;
+                                            rdfs:label "Larch" .
+
+
+###  https://michaeldebellis.com/example/Living_Thing
+<https://michaeldebellis.com/example/Living_Thing> rdf:type owl:Class ;
+                                                   rdfs:label "Living Thing" .
+
+
+###  https://michaeldebellis.com/example/Lizard
+<https://michaeldebellis.com/example/Lizard> rdf:type owl:Class ;
+                                             rdfs:subClassOf <https://michaeldebellis.com/example/Reptile> ;
+                                             rdfs:label "Lizard" .
+
+
+###  https://michaeldebellis.com/example/Mammal
+<https://michaeldebellis.com/example/Mammal> rdf:type owl:Class ;
+                                             rdfs:subClassOf [ owl:intersectionOf ( <https://michaeldebellis.com/example/Animal>
+                                                                                    [ rdf:type owl:Restriction ;
+                                                                                      owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                                                                                      owl:someValuesFrom <https://michaeldebellis.com/example/Fur>
+                                                                                    ]
+                                                                                  ) ;
+                                                               rdf:type owl:Class
+                                                             ] ;
+                                             rdfs:label "Mammal" .
+
+
+###  https://michaeldebellis.com/example/Orchid
+<https://michaeldebellis.com/example/Orchid> rdf:type owl:Class ;
+                                             rdfs:subClassOf <https://michaeldebellis.com/example/Flower> ;
+                                             rdfs:label "Orchid" .
+
+
+###  https://michaeldebellis.com/example/Plant
+<https://michaeldebellis.com/example/Plant> rdf:type owl:Class ;
+                                            rdfs:subClassOf <https://michaeldebellis.com/example/Living_Thing> ;
+                                            rdfs:label "Plant" .
+
+
+###  https://michaeldebellis.com/example/Red_Tail_Hawk
+<https://michaeldebellis.com/example/Red_Tail_Hawk> rdf:type owl:Class ;
+                                                    rdfs:subClassOf <https://michaeldebellis.com/example/Bird> ;
+                                                    rdfs:label "Red Tail Hawk" .
+
+
+###  https://michaeldebellis.com/example/Reptile
+<https://michaeldebellis.com/example/Reptile> rdf:type owl:Class ;
+                                              rdfs:subClassOf [ owl:intersectionOf ( <https://michaeldebellis.com/example/Animal>
+                                                                                     [ rdf:type owl:Restriction ;
+                                                                                       owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                                                                                       owl:someValuesFrom <https://michaeldebellis.com/example/Scale>
+                                                                                     ]
+                                                                                   ) ;
+                                                                rdf:type owl:Class
+                                                              ] ;
+                                              rdfs:label "Reptile" .
+
+
+###  https://michaeldebellis.com/example/Rose
+<https://michaeldebellis.com/example/Rose> rdf:type owl:Class ;
+                                           rdfs:subClassOf <https://michaeldebellis.com/example/Flower> ;
+                                           rdfs:label "Rose" .
+
+
+###  https://michaeldebellis.com/example/Scale
+<https://michaeldebellis.com/example/Scale> rdf:type owl:Class ;
+                                            rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+                                            rdfs:label "Scale" .
+
+
+###  https://michaeldebellis.com/example/Scrub_Jay
+<https://michaeldebellis.com/example/Scrub_Jay> rdf:type owl:Class ;
+                                                rdfs:subClassOf <https://michaeldebellis.com/example/Bird> ;
+                                                rdfs:label "Scrub Jay" .
+
+
+###  https://michaeldebellis.com/example/Tree
+<https://michaeldebellis.com/example/Tree> rdf:type owl:Class ;
+                                           rdfs:subClassOf [ owl:intersectionOf ( <https://michaeldebellis.com/example/Plant>
+                                                                                  [ rdf:type owl:Restriction ;
+                                                                                    owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                                                                                    owl:someValuesFrom <https://michaeldebellis.com/example/Bark>
+                                                                                  ]
+                                                                                ) ;
+                                                             rdf:type owl:Class
+                                                           ] ;
+                                           rdfs:label "Tree" .
+
+
+#################################################################
+#    General axioms
+#################################################################
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( <https://michaeldebellis.com/example/Bark>
+                <https://michaeldebellis.com/example/Cuticle>
+                <https://michaeldebellis.com/example/Feather>
+                <https://michaeldebellis.com/example/Fur>
+                <https://michaeldebellis.com/example/Scale>
+              )
+] .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

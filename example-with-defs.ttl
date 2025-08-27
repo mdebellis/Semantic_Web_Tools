@@ -1,0 +1,144 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://michaeldebellis.com/example> a owl:Ontology .
+
+<https://michaeldebellis.com/example/Cat> a owl:Class ;
+    rdfs:label "Cat" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Mammal> ;
+    skos:definition "A Cat is a kind of Mammal." .
+
+<https://michaeldebellis.com/example/Dog> a owl:Class ;
+    rdfs:label "Dog" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Mammal> ;
+    skos:definition "A Dog is a kind of Mammal." .
+
+<https://michaeldebellis.com/example/Human> a owl:Class ;
+    rdfs:label "Human" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Mammal> ;
+    skos:definition "A Human is a kind of Mammal." .
+
+<https://michaeldebellis.com/example/Larch> a owl:Class ;
+    rdfs:label "Larch" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Tree> ;
+    skos:definition "A Larch is a kind of Tree." .
+
+<https://michaeldebellis.com/example/Lizard> a owl:Class ;
+    rdfs:label "Lizard" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Reptile> ;
+    skos:definition "A Lizard is a kind of Reptile." .
+
+<https://michaeldebellis.com/example/Orchid> a owl:Class ;
+    rdfs:label "Orchid" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Flower> ;
+    skos:definition "A Orchid is a kind of Flower." .
+
+<https://michaeldebellis.com/example/Red_Tail_Hawk> a owl:Class ;
+    rdfs:label "Red Tail Hawk" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Bird> ;
+    skos:definition "A Red Tail Hawk is a kind of Bird." .
+
+<https://michaeldebellis.com/example/Rose> a owl:Class ;
+    rdfs:label "Rose" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Flower> ;
+    skos:definition "A Rose is a kind of Flower." .
+
+<https://michaeldebellis.com/example/Scrub_Jay> a owl:Class ;
+    rdfs:label "Scrub Jay" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Bird> ;
+    skos:definition "A Scrub Jay is a kind of Bird." .
+
+<https://michaeldebellis.com/example/Reptile> a owl:Class ;
+    rdfs:label "Reptile" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( <https://michaeldebellis.com/example/Animal> [ a owl:Restriction ;
+                        owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                        owl:someValuesFrom <https://michaeldebellis.com/example/Scale> ] ) ] ;
+    skos:definition "A Reptile has covering some Scale.",
+        "A Reptile is a kind of Animal." .
+
+<https://michaeldebellis.com/example/Tree> a owl:Class ;
+    rdfs:label "Tree" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( <https://michaeldebellis.com/example/Plant> [ a owl:Restriction ;
+                        owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                        owl:someValuesFrom <https://michaeldebellis.com/example/Bark> ] ) ] ;
+    skos:definition "A Tree has covering some Bark.",
+        "A Tree is a kind of Plant." .
+
+<https://michaeldebellis.com/example/Bark> a owl:Class ;
+    rdfs:label "Bark" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+    skos:definition "A Bark is a kind of Covering." .
+
+<https://michaeldebellis.com/example/Bird> a owl:Class ;
+    rdfs:label "Bird" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( <https://michaeldebellis.com/example/Animal> [ a owl:Restriction ;
+                        owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                        owl:someValuesFrom <https://michaeldebellis.com/example/Feather> ] ) ] ;
+    skos:definition "A Bird has covering some Feather.",
+        "A Bird is a kind of Animal." .
+
+<https://michaeldebellis.com/example/Cuticle> a owl:Class ;
+    rdfs:label "Cuticle" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+    skos:definition "A Cuticle is a kind of Covering." .
+
+<https://michaeldebellis.com/example/Feather> a owl:Class ;
+    rdfs:label "Feather" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+    skos:definition "A Feather is a kind of Covering." .
+
+<https://michaeldebellis.com/example/Flower> a owl:Class ;
+    rdfs:label "Flower" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( <https://michaeldebellis.com/example/Plant> [ a owl:Restriction ;
+                        owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                        owl:someValuesFrom <https://michaeldebellis.com/example/Cuticle> ] ) ] ;
+    skos:definition "A Flower has covering some Cuticle.",
+        "A Flower is a kind of Plant." .
+
+<https://michaeldebellis.com/example/Fur> a owl:Class ;
+    rdfs:label "Fur" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+    skos:definition "A Fur is a kind of Covering." .
+
+<https://michaeldebellis.com/example/Living_Thing> a owl:Class ;
+    rdfs:label "Living Thing" .
+
+<https://michaeldebellis.com/example/Plant> a owl:Class ;
+    rdfs:label "Plant" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Living_Thing> ;
+    skos:definition "A Plant is a kind of Living Thing." .
+
+<https://michaeldebellis.com/example/Scale> a owl:Class ;
+    rdfs:label "Scale" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Covering> ;
+    skos:definition "A Scale is a kind of Covering." .
+
+<https://michaeldebellis.com/example/Animal> a owl:Class ;
+    rdfs:label "Animal" ;
+    rdfs:subClassOf <https://michaeldebellis.com/example/Living_Thing> ;
+    skos:definition "A Animal is a kind of Living Thing." .
+
+<https://michaeldebellis.com/example/Mammal> a owl:Class ;
+    rdfs:label "Mammal" ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( <https://michaeldebellis.com/example/Animal> [ a owl:Restriction ;
+                        owl:onProperty <https://michaeldebellis.com/example/has_covering> ;
+                        owl:someValuesFrom <https://michaeldebellis.com/example/Fur> ] ) ] ;
+    skos:definition "A Mammal has covering some Fur.",
+        "A Mammal is a kind of Animal." .
+
+<https://michaeldebellis.com/example/Covering> a owl:Class ;
+    rdfs:label "Covering" .
+
+<https://michaeldebellis.com/example/has_covering> a owl:ObjectProperty ;
+    rdfs:label "has covering" .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( <https://michaeldebellis.com/example/Bark> <https://michaeldebellis.com/example/Cuticle> <https://michaeldebellis.com/example/Feather> <https://michaeldebellis.com/example/Fur> <https://michaeldebellis.com/example/Scale> ) .
+
