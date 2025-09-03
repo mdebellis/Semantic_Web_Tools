@@ -27,6 +27,8 @@ from datetime import date
 
 from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef, Literal
 from rdflib.namespace import SKOS, split_uri
+import argparse
+from datetime import datetime
 
 # --------------------
 # Settings
@@ -201,8 +203,24 @@ def add_datatype_property_definitions(g: Graph, today_iso: str):
 # --------------------
 # Main
 # --------------------
-def main(in_path: str):
-    in_path = Path(in_path)
+def main_cli():
+    parser = argparse.ArgumentParser(
+        description="Generate boilerplate SKOS definitions for classes and datatype properties."
+    )
+    parser.add_argument("input", help="Path to the input Turtle ontology (e.g., People_Ontology.ttl)")
+    parser.add_argument(
+        "-o", "--output",
+        help="Output TTL path. Defaults to <input>_with_documentation.ttl"
+    )
+    parser.add_argument(
+        "--on-exist",
+        choices=["overwrite", "error", "backup"],
+        default="overwrite",
+        help="Behavior if the output file already exists. Default: overwrite"
+    )
+    args = parser.parse_args()
+
+    in_path = Path(args.input)
     if not in_path.exists():
         print(f"Input file not found: {in_path}", file=sys.stderr)
         sys.exit(1)
@@ -215,15 +233,29 @@ def main(in_path: str):
     cls_added, cls_updated = add_class_definitions(g, today)
     dp_added, dp_updated = add_datatype_property_definitions(g, today)
 
-    out_path = in_path.with_name(in_path.stem + "_with_documentation.ttl")
+    out_path = Path(args.output) if args.output else in_path.with_name(in_path.stem + "_with_documentation.ttl")
+
+    # Handle existing output
+    if out_path.exists():
+        if args.on_exist == "error":
+            print(f"Refusing to overwrite existing file: {out_path}", file=sys.stderr)
+            sys.exit(3)
+        elif args.on_exist == "backup":
+            ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+            backup = out_path.with_suffix(out_path.suffix + f".bak-{ts}")
+            try:
+                out_path.rename(backup)
+                print(f"Backed up existing output to: {backup}")
+            except Exception as e:
+                print(f"Failed to back up existing file: {e}", file=sys.stderr)
+                sys.exit(4)
+        # overwrite: do nothing special
+
     g.serialize(destination=out_path.as_posix(), format="turtle")
 
-    print(f"Classes:   added {cls_added}" + (f", updated {cls_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
+    print(f"Classes:    added {cls_added}" + (f", updated {cls_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Data props: added {dp_added}" + (f", updated {dp_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Wrote: {out_path}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python create_defs_for_owl_file.py path/to/ontology.ttl", file=sys.stderr)
-        sys.exit(2)
-    main(sys.argv[1])
+    main_cli()
