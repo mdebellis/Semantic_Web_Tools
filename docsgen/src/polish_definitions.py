@@ -9,7 +9,7 @@ Pass 2: Polish auto-generated class definitions in-place using ChatGPT.
 - Leaves human-authored definitions alone.
 
 Usage:
-  python polish_definitions.py path/to/ontology_with_documentation.ttl
+  python polish_definitions.py People_Ontology_with_documentation.ttl
 """
 
 import os
