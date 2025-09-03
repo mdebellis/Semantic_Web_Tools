@@ -17,7 +17,7 @@ Idempotence:
   - Set OVERWRITE_EXISTING_AUTOGEN = True to replace prior autogen definitions.
 
 Usage:
-  python create_defs_for_owl_file.py path/to/ontology.ttl
+  python create_defs_for_owl_file.py People_Ontology.ttl
 """
 
 import sys
@@ -148,6 +148,7 @@ def add_class_definitions(g: Graph, today_iso: str):
         g.add((cls, SKOS.definition, Literal(text)))
     return added, updated
 
+
 def add_datatype_property_definitions(g: Graph, today_iso: str):
     """Generate autogen skos:definition for datatype properties (T1 template)."""
     props = set(s for s in g.subjects(RDF.type, OWL.DatatypeProperty) if isinstance(s, URIRef))
@@ -200,6 +201,172 @@ def add_datatype_property_definitions(g: Graph, today_iso: str):
 
     return added, updated
 
+def add_object_property_definitions(g: Graph, today_iso: str):
+    """Generate autogen skos:definition for object properties following Michael's guidelines."""
+    # Local helpers (kept inside to avoid polluting module namespace)
+    def _label_for(u: URIRef) -> str:
+        return label_for(g, u)
+
+    def _render_list_members(head: URIRef):
+        members = []
+        while head and head != RDF.nil:
+            first = g.value(head, RDF.first)
+            if first is not None:
+                members.append(first)
+            head = g.value(head, RDF.rest)
+        return members
+
+    def _render_class_expr(cls: URIRef) -> str:
+        # unionOf → "either A or B"
+        union_list = g.value(cls, OWL.unionOf)
+        if union_list:
+            labels = [_label_for(m) for m in _render_list_members(union_list)]
+            if len(labels) == 1:
+                return labels[0]
+            if len(labels) == 2:
+                return f"either {labels[0]} or {labels[1]}"
+            mid = ", ".join(labels[:-1])
+            return f"either {mid}, or {labels[-1]}"
+
+        # intersectionOf → "both A and B" / "all of ..."
+        inter_list = g.value(cls, OWL.intersectionOf)
+        if inter_list:
+            labels = [_label_for(m) for m in _render_list_members(inter_list)]
+            if len(labels) == 1:
+                return labels[0]
+            if len(labels) == 2:
+                return f"both {labels[0]} and {labels[1]}"
+            mid = ", ".join(labels[:-1])
+            return f"all of {mid}, and {labels[-1]}"
+
+        return _label_for(cls)
+
+    def _render_multi_domains_ranges(vals):
+        labels = [_label_for(v) for v in vals]
+        if not labels:
+            return "Thing"
+        if len(labels) == 1:
+            return labels[0]
+        if len(labels) == 2:
+            return f"both {labels[0]} and {labels[1]}"
+        mid = ", ".join(labels[:-1])
+        return f"all of {mid}, and {labels[-1]}"
+
+    def _first_sentence_relation(p: URIRef) -> str:
+        domains = [d for d in g.objects(p, RDFS.domain)]
+        ranges  = [r for r in g.objects(p, RDFS.range)]
+
+        def _phrase(vals):
+            if len(vals) == 1 and isinstance(vals[0], URIRef):
+                return _render_class_expr(vals[0])
+            # Multiple domain/range triples ⇒ intersection per RDFS semantics
+            only_uris = [v for v in vals if isinstance(v, URIRef)]
+            return _render_multi_domains_ranges(only_uris)
+
+        d_txt = _phrase(domains) if domains else "Thing"
+        r_txt = _phrase(ranges)  if ranges  else "Thing"
+        return f"a relation between {d_txt} and {r_txt}"
+
+    def _property_characteristics(p: URIRef):
+        sents = []
+        if (p, RDF.type, OWL.FunctionalProperty) in g:
+            sents.append("It is functional which means that each subject can relate to at most one object by this property.")
+        if (p, RDF.type, OWL.InverseFunctionalProperty) in g:
+            sents.append("It is inverse functional which means that each object can be related to by at most one subject via this property.")
+        if (p, RDF.type, OWL.TransitiveProperty) in g:
+            sents.append("It is transitive which means that if x relates to y and y relates to z, then x relates to z.")
+        if (p, RDF.type, OWL.SymmetricProperty) in g:
+            sents.append("It is symmetric which means that if x relates to y, then y relates to x.")
+        if (p, RDF.type, OWL.AsymmetricProperty) in g:
+            sents.append("It is asymmetric which means that if x relates to y, then y cannot relate to x by this property.")
+        if (p, RDF.type, OWL.ReflexiveProperty) in g:
+            sents.append("It is reflexive which means that every individual relates to itself by this property.")
+        if (p, RDF.type, OWL.IrreflexiveProperty) in g:
+            sents.append("It is irreflexive which means that no individual relates to itself by this property.")
+        return sents
+
+    def _quote_first_use(name: str, seen: set) -> str:
+        if name not in seen:
+            seen.add(name)
+            return f"‘{name}’"
+        return name
+
+    # Gather object properties
+    props = set(s for s in g.subjects(RDF.type, OWL.ObjectProperty) if isinstance(s, URIRef))
+    # Exclude top/bottom object property if present
+    try:
+        props.discard(OWL.topObjectProperty)
+        props.discard(OWL.bottomObjectProperty)
+    except AttributeError:
+        pass
+
+    added = updated = 0
+
+    for p in sorted(props, key=lambda u: str(u)):
+        # AUTOGEN overwrite behavior mirrors your other generators
+        if has_autogen_def(g, p) and not OVERWRITE_EXISTING_AUTOGEN:
+            continue
+        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g, p):
+            remove_autogen_defs(g, p)
+            updated += 1
+        else:
+            added += 1
+
+        seen_labels = set()
+        p_label = _label_for(p)
+        p_label_q = _quote_first_use(p_label, seen_labels)
+
+        parts = []
+        # First sentence
+        parts.append(f"The property {p_label_q} is {_first_sentence_relation(p)}.")
+
+        # Super-properties
+        supers = [s for s in g.objects(p, RDFS.subPropertyOf) if isinstance(s, URIRef)]
+        if supers:
+            super_labels_q = [_quote_first_use(_label_for(s), seen_labels) for s in supers]
+            if len(super_labels_q) == 1:
+                parts.append(f"It is a sub-property of {super_labels_q[0]}.")
+            else:
+                joined = ", ".join(super_labels_q[:-1]) + f", and {super_labels_q[-1]}"
+                parts.append(f"It is a sub-property of {joined}.")
+            for s in supers:
+                s_lbl = _label_for(s)
+                parts.append(f"This means that if x {p_label} y then x {s_lbl} y.")
+
+        # Sub-properties
+        subs = [s for s in g.subjects(RDFS.subPropertyOf, p) if isinstance(s, URIRef)]
+        if subs:
+            sub_labels_q = [_quote_first_use(_label_for(s), seen_labels) for s in subs]
+            if len(sub_labels_q) == 1:
+                parts.append(f"It is the super-property for {sub_labels_q[0]}.")
+            else:
+                joined = ", ".join(sub_labels_q[:-1]) + f", and {sub_labels_q[-1]}"
+                parts.append(f"It is the super-property for {joined}.")
+            for s in subs:
+                s_lbl = _label_for(s)
+                parts.append(f"This means that if a subject x {s_lbl} y then x {p_label} y.")
+
+        # Inverse (both directions)
+        inverses = set(g.objects(p, OWL.inverseOf)) | set(g.subjects(OWL.inverseOf, p))
+        if inverses:
+            inv = next(iter(inverses))
+            inv_lbl = _label_for(inv)
+            inv_lbl_q = _quote_first_use(inv_lbl, seen_labels)
+            parts.append(f"It has inverse {inv_lbl_q}, which means that if x {p_label} y then y {inv_lbl} x.")
+
+        # Characteristics in Protégé order
+        parts.extend(_property_characteristics(p))
+
+        # Compose, uniquify, punctuate, and add AUTOGEN token
+        parts = sentences_unique_preserve_order([s.strip() for s in parts if s and s.strip()])
+        body = " ".join(s if s.endswith('.') else s + '.' for s in parts)
+        text = f"{body} ⟦AUTOGEN:P1:{today_iso}⟧"
+
+        g.add((p, SKOS.definition, Literal(text)))
+
+    return added, updated
+
+
 # --------------------
 # Main
 # --------------------
@@ -232,6 +399,8 @@ def main_cli():
 
     cls_added, cls_updated = add_class_definitions(g, today)
     dp_added, dp_updated = add_datatype_property_definitions(g, today)
+    op_added, op_updated = add_object_property_definitions(g, today)
+
 
     out_path = Path(args.output) if args.output else in_path.with_name(in_path.stem + "_with_documentation.ttl")
 
@@ -255,6 +424,8 @@ def main_cli():
 
     print(f"Classes:    added {cls_added}" + (f", updated {cls_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Data props: added {dp_added}" + (f", updated {dp_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
+    print(f"Object props: added {op_added}" + (f", updated {op_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
+
     print(f"Wrote: {out_path}")
 
 if __name__ == "__main__":

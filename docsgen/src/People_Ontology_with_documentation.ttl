@@ -1,0 +1,1531 @@
+@prefix : <http://michaeldebellis.com/people/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix swrl: <http://www.w3.org/2003/11/swrl#> .
+@prefix swrla: <http://swrl.stanford.edu/ontologies/3.3/swrla.owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://michaeldebellis.com/people> a owl:Ontology ;
+    dct:creator """Michael DeBellis
+Orcid ID: 0000-0002-8824-9577""" ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/legalcode> ;
+    skos:definition "A simple example ontology of People, Organizations, Places, and Animals to illustrate basic Semantic Web concepts from RDF, RDFS, OWL, SPARQL and SHACL" .
+
+:Adam a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Adam" ;
+    :has_Husband :Steve ;
+    :has_age 23 ;
+    owl:differentFrom :Steve .
+
+:Address_Of_Marlow_Detective_Agency a :Address,
+        owl:NamedIndividual ;
+    rdfs:label "Address Of Marlow Detective Agency" ;
+    :has_State :California ;
+    :has_city :Los_Angeles ;
+    :street "Hollywood Blvd.",
+        "the Cahuenga Building" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Big_Sleep> .
+
+:Allison a :Human,
+        owl:NamedIndividual ;
+    rdfs:label "Allison" ;
+    :has_Friend :Michael ;
+    :has_Gender :Female ;
+    :has_Pet :Ash ;
+    :has_age 28 .
+
+:Alonzo_Church a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Alonzo Church" ;
+    :has_Colleague :Alan_Turing .
+
+:Apple_Inc a :Corporation,
+        owl:NamedIndividual ;
+    rdfs:label "Apple Inc" .
+
+:Aviva_Chomsky a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Aviva Chomsky" ;
+    :birth_date "1957-04-20T00:00:00+00:00"^^xsd:dateTime ;
+    :has_Father :Noam_Chomsky .
+
+:Baha_ud-Din_Walad a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Baha ud-Din Walad" ;
+    :has_Son :Rumi .
+
+:Celeste_Albaret a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Céleste Albaret" ;
+    :has_Social_Relationship :Marcel_Proust .
+
+:Claude_Shannon a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Claude Shannon" ;
+    :birth_date "1916-04-30T00:00:00+00:00"^^xsd:dateTime ;
+    :employee_id "abc-de-fghi" ;
+    :has_Colleague :Alan_Turing ;
+    :has_employer :Bell_Labs ;
+    :hired_on_date "1941-01-01T00:00:00"^^xsd:dateTime ;
+    :phone "+1 (609) 555-6789" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Claude_Shannon> .
+
+:Cow a owl:Class ;
+    rdfs:label "Cow" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom :Grass ;
+            owl:onProperty :eats ],
+        :Mammal ;
+    skos:definition "A Cow is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Dinsdale_Piranha a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Dinsdale Piranha" ;
+    :has_Pet :Spiny_Norman ;
+    rdfs:isDefinedBy <https://www.youtube.com/watch?v=8ZkWL-XvO0U> .
+
+:Earth a :Planet,
+        owl:NamedIndividual ;
+    rdfs:label "Earth" ;
+    :contains :Africa,
+        :Antarctica,
+        :Asia,
+        :Australia,
+        :Europe,
+        :North_America,
+        :South_America .
+
+:Einsteins_Wife a owl:Class ;
+    rdfs:label "Einstein's Wife" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Woman [ a owl:Restriction ;
+                        owl:hasValue :Albert_Einstein ;
+                        owl:onProperty :has_Husband ] ) ] ;
+    skos:definition "A Einstein's Wife is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Emmanuelle_Charpentier a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Emmanuelle Charpentier" ;
+    :birth_date "1968-12-11T00:00:00+00:00"^^xsd:dateTime ;
+    :employee_id "000-99-4321" ;
+    :has_Colleague :Jennifer_Doudna ;
+    :has_employer :Max_Planck_Unit_for_the_Science_of_Pathogens ;
+    :hired_on_date "2002-01-01T00:00:00"^^xsd:dateTime ;
+    :nobel_prize_winner true .
+
+:Evelyn_Mase a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Evelyn Mase" ;
+    :has_Husband :Nelson_Mandela .
+
+:Fluffy rdfs:label "Fluffy" .
+
+:Gold_Fish a owl:Class ;
+    rdfs:label "Gold Fish" ;
+    rdfs:subClassOf :Fish ;
+    skos:definition "A Gold Fish is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Gustav_Mahler a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Gustav Mahler" ;
+    :has_Wife :Alma_Mahler ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Gustav_Mahler> .
+
+:Herbivore a owl:Class ;
+    rdfs:label "Herbivore" ;
+    rdfs:subClassOf :Animal ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Animal [ a owl:Restriction ;
+                        owl:allValuesFrom :Plant ;
+                        owl:onProperty :eats ] ) ] ;
+    skos:definition "A Herbivore is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Hermit a owl:Class ;
+    rdfs:label "Hermit" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Person [ a owl:Restriction ;
+                        owl:onClass :Person ;
+                        owl:onProperty :has_Social_Relationship ;
+                        owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ] ) ] ;
+    skos:definition "A Hermit is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Howard_Aiken a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Howard Aiken" ;
+    :has_Friend :Grace_Hopper .
+
+:India a :Nation,
+        owl:NamedIndividual ;
+    rdfs:label "India" .
+
+:Insect a owl:Class ;
+    rdfs:label "Insect" ;
+    rdfs:subClassOf :Animal ;
+    owl:disjointWith :Vertebrate ;
+    skos:definition "A Insect is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:James_Gatz a owl:NamedIndividual ;
+    rdfs:label "James Gatz" ;
+    :has_Father :HenryCGatz ;
+    owl:sameAs :Jay_Gatsby .
+
+:Janaki a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Janaki" ;
+    :has_Husband :Srinivasa_Ramanujan .
+
+:John a :Human,
+        owl:NamedIndividual ;
+    rdfs:label "John" ;
+    :has_Pet :Eric_The_Fish .
+
+:John_G_Kemeny a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "John G. Kemeny" ;
+    :has_Colleague :John_von_Neumann .
+
+:Kings_College a :University,
+        owl:NamedIndividual ;
+    rdfs:label "Kings College" ;
+    :has_city :London ;
+    :is_Employer_Of :Alan_Turing .
+
+:Klara_Dan_Von_Neumann a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Klára Dán von Neumann" ;
+    :has_Husband :John_von_Neumann .
+
+:Kong_Li a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Kong Li" ;
+    :has_Father :Confucius ;
+    :wikidata <https://www.wikidata.org/wiki/Q7240164> .
+
+:Massachusetts_Institute_of_Technology a :University,
+        owl:NamedIndividual ;
+    rdfs:label "Massachusetts Institute of Technology" ;
+    :has_city :Cambridge ;
+    :is_Employer_Of :Noam_Chomsky ;
+    rdfs:isDefinedBy <https://web.mit.edu/> .
+
+:Max_Planck_Institute_for_Infection_Biology rdfs:label "Max Planck Institute for Infection Biology" .
+
+:Miss_Havisham a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Miss Havisham" ;
+    :has_Gender :Female ;
+    :has_age 65 ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Miss_Havisham> .
+
+:Muriel_Frances_Waley a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Muriel Frances Waley" ;
+    :has_Daughter :Rosalind_Franklin ;
+    :has_Husband :Ellis_Arthur_Franklin .
+
+:Organization_Unit a owl:Class ;
+    rdfs:label "Organization Unit" ;
+    rdfs:subClassOf :Orgonization_Component ;
+    skos:definition "A Organization Unit is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Oskar_Morgenstern a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Oskar Morgenstern" ;
+    :has_Colleague :John_von_Neumann .
+
+:Parent a owl:Class ;
+    rdfs:label "Parent" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Adult [ a owl:Restriction ;
+                        owl:onProperty :has_Child ;
+                        owl:someValuesFrom :Person ] ) ] ;
+    skos:definition "A Parent is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Rose a owl:Class ;
+    rdfs:label "Rose" ;
+    rdfs:subClassOf :Flower ;
+    skos:definition "A Rose is a kind of Flower. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Self_Employee a owl:Class ;
+    rdfs:label "Self Employee" ;
+    rdfs:subClassOf :Employee ;
+    skos:definition "A Self Employee is a kind of Employee. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Sherlock_Holmes a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Sherlock Holmes" ;
+    :has_Address :Address_Of_Sherlock_Holmes ;
+    :has_Colleague :Doctor_Watson ;
+    :wikidata <https://www.wikidata.org/wiki/Q3481944> .
+
+:Social_Person a owl:Class ;
+    rdfs:label "Social Person" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Person [ a owl:Restriction ;
+                        owl:minQualifiedCardinality "5"^^xsd:nonNegativeInteger ;
+                        owl:onClass :Person ;
+                        owl:onProperty :has_Social_Relationship ] ) ] ;
+    skos:definition "A Social Person is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Sun_Microsystems a :Corporation,
+        owl:NamedIndividual ;
+    rdfs:label "Sun Microsystems" .
+
+:Terry_Lennox a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Terry Lennox" ;
+    :has_Friend :Philip_Marlowe .
+
+:The_Larch1 a :Larch,
+        owl:NamedIndividual ;
+    rdfs:label "The Larch1" .
+
+:University_of_Manchester a :University,
+        owl:NamedIndividual ;
+    rdfs:label "University of Manchester" ;
+    :has_city :Manchester ;
+    :is_Employer_Of :Alan_Turing .
+
+:Xerox_PARC a :Research_Institute,
+        owl:NamedIndividual ;
+    rdfs:label "Xerox PARC" .
+
+:birth_date a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "birth date" ;
+    rdfs:range xsd:dateTime ;
+    skos:definition "The data property birth date records the birth date as an xsd:dateTime value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:contains a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "contains" ;
+    rdfs:subPropertyOf :contains_transitive ;
+    owl:inverseOf :is_contained_in ;
+    skos:definition "The property ‘contains’ is a relation between Thing and Thing. It is a sub-property of ‘contains transitive’. This means that if x contains y then x contains transitive y. It has inverse ‘is contained in’, which means that if x contains y then y is contained in x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:email a owl:DatatypeProperty ;
+    rdfs:label "email" ;
+    skos:definition "The data property email records the email as a literal value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:employee_id a owl:DatatypeProperty ;
+    rdfs:label "employee id" ;
+    rdfs:domain :Employee ;
+    skos:definition "The data property employee id records a Employee's employee id as a literal value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Address a owl:ObjectProperty ;
+    rdfs:label "has address" ;
+    rdfs:domain :Agent ;
+    rdfs:range :Address ;
+    rdfs:subPropertyOf :has_Location ;
+    owl:inverseOf :is_Address_For ;
+    skos:definition "The property ‘has address’ is a relation between Agent and Address. It is a sub-property of ‘has location’. This means that if x has address y then x has location y. It has inverse ‘is address for’, which means that if x has address y then y is address for x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Colleague a owl:IrreflexiveProperty,
+        owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "has colleague" ;
+    rdfs:subPropertyOf :has_Social_Relationship ;
+    skos:definition "The property ‘has colleague’ is a relation between Thing and Thing. It is a sub-property of ‘has social relationship’. This means that if x has colleague y then x has social relationship y. It is symmetric which means that if x relates to y, then y relates to x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Daughter a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has daughter" ;
+    rdfs:range [ a owl:Class ;
+            owl:unionOf ( :Girl :Woman ) ] ;
+    rdfs:subPropertyOf :has_Child ;
+    skos:definition "The property ‘has daughter’ is a relation between Thing and Thing. It is a sub-property of ‘has child’. This means that if x has daughter y then x has child y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Father a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has father" ;
+    :wikidata <https://www.wikidata.org/wiki/Q7565> ;
+    rdfs:range :Man ;
+    rdfs:subPropertyOf :has_Parent ;
+    skos:definition "The property ‘has father’ is a relation between Thing and Man. It is a sub-property of ‘has parent’. This means that if x has father y then x has parent y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Friend a owl:IrreflexiveProperty,
+        owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "has friend" ;
+    rdfs:subPropertyOf :has_Social_Relationship ;
+    skos:definition "The property ‘has friend’ is a relation between Thing and Thing. It is a sub-property of ‘has social relationship’. This means that if x has friend y then x has social relationship y. It is symmetric which means that if x relates to y, then y relates to x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Member a owl:ObjectProperty ;
+    rdfs:label "has member" ;
+    rdfs:domain :Organization ;
+    rdfs:range :Agent ;
+    rdfs:subPropertyOf :has_Part ;
+    owl:inverseOf :is_Member_Of ;
+    skos:definition "The property ‘has member’ is a relation between Organization and Agent. It is a sub-property of ‘has part’. This means that if x has member y then x has part y. It has inverse ‘is member of’, which means that if x has member y then y is member of x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Mother a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has mother" ;
+    :wikidata <https://www.wikidata.org/wiki/Q7560> ;
+    rdfs:range :Woman ;
+    rdfs:subPropertyOf :has_Parent ;
+    skos:definition "The property ‘has mother’ is a relation between Thing and Woman. It is a sub-property of ‘has parent’. This means that if x has mother y then x has parent y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Pet a owl:ObjectProperty ;
+    rdfs:label "has pet" ;
+    owl:inverseOf :is_Pet_Of ;
+    skos:definition "The property ‘has pet’ is a relation between Thing and Thing. It has inverse ‘is pet of’, which means that if x has pet y then y is pet of x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Son a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has son" ;
+    rdfs:range [ a owl:Class ;
+            owl:unionOf ( :Boy :Man ) ] ;
+    rdfs:subPropertyOf :has_Child ;
+    skos:definition "The property ‘has son’ is a relation between Thing and Thing. It is a sub-property of ‘has child’. This means that if x has son y then x has child y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_State a owl:ObjectProperty ;
+    rdfs:label "has state" ;
+    rdfs:range :State ;
+    rdfs:subPropertyOf :has_Location ;
+    skos:definition "The property ‘has state’ is a relation between Thing and State. It is a sub-property of ‘has location’. This means that if x has state y then x has location y. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Subsidiary a owl:ObjectProperty ;
+    rdfs:label "has subsidiary" ;
+    rdfs:domain :Organization ;
+    rdfs:range :Orgonization_Component ;
+    rdfs:subPropertyOf :has_Part ;
+    owl:inverseOf :is_subsidiary_of ;
+    skos:definition "The property ‘has subsidiary’ is a relation between Organization and Orgonization Component. It is a sub-property of ‘has part’. This means that if x has subsidiary y then x has part y. It has inverse ‘is subsidiary of’, which means that if x has subsidiary y then y is subsidiary of x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Wife a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has wife" ;
+    rdfs:range :Woman ;
+    rdfs:subPropertyOf :has_Spouse ;
+    skos:definition "The property ‘has wife’ is a relation between Thing and Woman. It is a sub-property of ‘has spouse’. This means that if x has wife y then x has spouse y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:hired_on_date a owl:DatatypeProperty ;
+    rdfs:label "hired on date" ;
+    rdfs:domain :Employee ;
+    rdfs:range xsd:dateTime ;
+    skos:definition "The data property hired on date records a Employee's hired on date as an xsd:dateTime value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:nobel_prize_winner a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "nobel prize winner" ;
+    rdfs:domain :Person ;
+    rdfs:range xsd:boolean ;
+    skos:definition "The data property nobel prize winner records a Person's nobel prize winner as an xsd:boolean value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:number_of_social_relations a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "number of social relations" ;
+    rdfs:domain :Person ;
+    rdfs:range xsd:integer ;
+    skos:definition "The data property number of social relations records a Person's number of social relations as an xsd:integer value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:phone a owl:DatatypeProperty ;
+    rdfs:label "phone" ;
+    skos:definition "The data property phone records the phone as a literal value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:street a owl:DatatypeProperty ;
+    rdfs:label "street" ;
+    rdfs:domain :Address ;
+    skos:definition "The data property street records a Address's street as a literal value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:unit a owl:DatatypeProperty ;
+    rdfs:label "unit" ;
+    rdfs:domain :Address ;
+    skos:altLabel "apartment",
+        "suite" ;
+    skos:definition "The data property unit records a Address's unit as a literal value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:wikidata a owl:AnnotationProperty ;
+    rdfs:range xsd:anyURI .
+
+:zip a owl:DatatypeProperty ;
+    rdfs:label "zip" ;
+    rdfs:domain :Address ;
+    skos:definition "The data property zip records a Address's zip as a literal value. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+dct:abstract a owl:AnnotationProperty ;
+    rdfs:label "abstract" ;
+    skos:definition "A summary of the resource." .
+
+dct:creator a owl:AnnotationProperty ;
+    rdfs:label "creator" ;
+    rdfs:comment "Recommended practice is to identify the creator with a URI. If this is not possible or feasible, a literal value that identifies the creator may be provided." ;
+    skos:definition "An entity responsible for making the resource." .
+
+dct:license a owl:AnnotationProperty .
+
+dct:subject a owl:AnnotationProperty ;
+    rdfs:label "subject" ;
+    rdfs:comment "Recommended practice is to refer to the subject with a URI. If this is not possible or feasible, a literal value that identifies the subject may be provided. Both should preferably refer to a subject in a controlled vocabulary." ;
+    skos:definition "A topic of the resource." .
+
+dct:title a owl:AnnotationProperty ;
+    rdfs:label "title" ;
+    skos:definition "A name given to the resource." .
+
+swrla:isRuleEnabled a owl:AnnotationProperty .
+
+skos:altLabel a owl:AnnotationProperty ;
+    rdfs:label "alternative label"@en ;
+    rdfs:isDefinedBy <https://www.w3.org/2012/09/odrl/semantic/draft/doco/http___www.w3.org_2004_02_skos_core.html> ;
+    rdfs:subPropertyOf rdfs:label ;
+    skos:definition "An alternative lexical label for a resource." ;
+    skos:example "Acronyms, abbreviations, spelling variants, and irregular plural/singular forms may be included among the alternative labels for a concept. Mis-spelled terms are normally included as hidden labels (see skos:hiddenLabel)." .
+
+skos:changeNote a owl:AnnotationProperty ;
+    rdfs:label "change note"@en ;
+    rdfs:subPropertyOf skos:note ;
+    skos:definition "A note about a modification to a concept." .
+
+skos:definition a owl:AnnotationProperty ;
+    rdfs:label "definition"@en ;
+    rdfs:subPropertyOf skos:note ;
+    skos:definition "A statement or formal explanation of the meaning of a concept." .
+
+skos:example a owl:AnnotationProperty ;
+    rdfs:label "example"@en ;
+    rdfs:subPropertyOf skos:note ;
+    skos:definition "An example of the use of a concept." .
+
+skos:prefLabel a owl:AnnotationProperty ;
+    rdfs:label "preferred label"@en ;
+    rdfs:comment "skos:prefLabel, skos:altLabel and skos:hiddenLabel are pairwise disjoint properties.	The range of skos:prefLabel is the class of RDF plain literals. A resource has no more than one value of skos:prefLabel per language tag." ;
+    rdfs:isDefinedBy <https://www.w3.org/2012/09/odrl/semantic/draft/doco/http___www.w3.org_2004_02_skos_core.html> ;
+    rdfs:subPropertyOf rdfs:label ;
+    skos:definition "The preferred lexical label for a resource, in a given language." .
+
+:Address_Of_Sherlock_Holmes a :Address,
+        owl:NamedIndividual ;
+    rdfs:label "Address Of Sherlock Holmes" ;
+    :has_city :London ;
+    :street "221B Baker Street" .
+
+:Address_Of_Spade_Detective_Agency a :Address,
+        owl:NamedIndividual ;
+    rdfs:label "Address Of Spade Detective Agency" ;
+    :has_State :California ;
+    :has_city :San_Francisco ;
+    :street "617 Bush Street" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Maltese_Falcon_(novel)> .
+
+:Africa a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "Africa" .
+
+:Alma_Mahler a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Alma Mahler" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Alma_Mahler> .
+
+:Antarctica a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "Antarctica" .
+
+:Asia a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "Asia" .
+
+:Australia a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "Australia" .
+
+:Bell_Labs a :Corporation,
+        owl:NamedIndividual ;
+    rdfs:label "Bell Labs" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Bell_Labs> .
+
+:Bird a owl:Class ;
+    rdfs:label "Bird" ;
+    rdfs:subClassOf :Vertebrate ;
+    skos:definition "A Bird is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Brazil a :Nation,
+        owl:NamedIndividual ;
+    rdfs:label "Brazil" .
+
+:British_Columbia a :Province,
+        owl:NamedIndividual ;
+    rdfs:label "British Columbia" ;
+    :contains :Vancouver .
+
+:Canada a :Nation,
+        owl:NamedIndividual ;
+    rdfs:label "Canada" ;
+    :contains :British_Columbia .
+
+:Chicago a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Chicago" .
+
+:Confucius a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Confucius" ;
+    :wikidata <https://www.wikidata.org/wiki/Q21189283> .
+
+:Creme_Puff a :Cat,
+        owl:NamedIndividual ;
+    rdfs:label "Creme Puff" ;
+    :wikidata <https://www.wikidata.org/wiki/Q2597104> .
+
+:Division a owl:Class ;
+    rdfs:label "Division" ;
+    rdfs:subClassOf :Orgonization_Component ;
+    skos:definition "A Division is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Doctor_Watson a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Doctor Watson" .
+
+:Ellis_Arthur_Franklin a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Ellis Arthur Franklin" .
+
+:Elsa_Einstein a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Elsa Einstein" ;
+    :birth_date "1876-01-18T00:00:00+00:00"^^xsd:dateTime ;
+    :has_Husband :Albert_Einstein .
+
+:Eric_The_Fish a :Halibut,
+        owl:NamedIndividual ;
+    rdfs:label "Eric the Fish" ;
+    rdfs:isDefinedBy <https://www.youtube.com/watch?v=M5MnyRZLd8A> .
+
+:Europe a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "Europe" ;
+    :contains :Germany,
+        :United_Kingdom .
+
+:Flower a owl:Class ;
+    rdfs:label "Flower" ;
+    rdfs:subClassOf :Plant ;
+    owl:disjointWith :Tree ;
+    skos:definition "A Flower is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Germany a :Nation,
+        owl:NamedIndividual ;
+    rdfs:label "Germany" ;
+    :contains :Berlin .
+
+:Grace_Hopper a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Grace Hopper" ;
+    :birth_date "1906-12-09T00:00:00+00:00"^^xsd:dateTime ;
+    :has_employer :Harvard_University .
+
+:Grass a owl:Class ;
+    rdfs:label "Grass" ;
+    rdfs:subClassOf :Plant ;
+    skos:definition "A Grass is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Haddock a owl:Class ;
+    rdfs:label "Haddock" ;
+    rdfs:subClassOf :Fish ;
+    skos:definition "A Haddock is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Halibut a owl:Class ;
+    rdfs:label "Halibut" ;
+    rdfs:subClassOf :Fish ;
+    skos:definition "A Halibut is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Harvard_University a :University,
+        owl:NamedIndividual ;
+    rdfs:label "Harvard University" ;
+    :has_city :Cambridge .
+
+:HenryCGatz a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Henry C. Gatz" ;
+    :has_Pet :Fido ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Great_Gatsby> .
+
+:IBM a :Corporation,
+        owl:NamedIndividual ;
+    rdfs:label "IBM" ;
+    rdfs:isDefinedBy <https://www.ibm.com/> .
+
+:Illinois a :State,
+        owl:NamedIndividual ;
+    rdfs:label "Illinois" ;
+    :contains :Chicago .
+
+:Institute_For_Advanced_Study a :Research_Institute,
+        owl:NamedIndividual ;
+    rdfs:label "Institute For Advanced Study" ;
+    :has_city :Princeton ;
+    :is_Employer_Of :Albert_Einstein ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Institute_for_Advanced_Study> .
+
+:Jennifer_Doudna a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Jennifer Doudna" ;
+    :birth_date "1964-02-19T00:00:00+00:00"^^xsd:dateTime ;
+    :employee_id "ucb-bio-1234" ;
+    :has_employer :University_of_California_Berkeley ;
+    :hired_on_date "2002-01-01T00:00:00"^^xsd:dateTime ;
+    :nobel_prize_winner true .
+
+:Jim_Doe a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Jim Doe" ;
+    :has_Gender :Male ;
+    :has_age 12 .
+
+:Kurt_Godel a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Kurt Gödel" ;
+    :has_Colleague :Albert_Einstein ;
+    :has_Friend :Albert_Einstein .
+
+:Larch a owl:Class ;
+    rdfs:label "Larch" ;
+    rdfs:subClassOf :Tree ;
+    skos:definition "A Larch is a kind of Tree. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Lise_Meitner a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Lise Meitner" ;
+    :birth_date "1878-11-07T00:00:00+00:00"^^xsd:dateTime ;
+    :has_Colleague :Albert_Einstein .
+
+:Marcel a :Haddock,
+        owl:NamedIndividual ;
+    rdfs:label "Marcel" ;
+    rdfs:isDefinedBy <https://www.youtube.com/watch?v=M5MnyRZLd8A> .
+
+:Marcel_Proust a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Marcel Proust" ;
+    :birth_date "1871-07-10T00:00:00+00:00"^^xsd:dateTime ;
+    :has_Pet :Marcel .
+
+:Massachusetts a :State,
+        owl:NamedIndividual ;
+    rdfs:label "Massachusetts" ;
+    :contains :Cambridge .
+
+:Max_Planck_Unit_for_the_Science_of_Pathogens a :Research_Institute,
+        owl:NamedIndividual ;
+    rdfs:label "Max Planck Institute for Infection Biology" ;
+    :has_city :Berlin .
+
+:Michael a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Michael" ;
+    :has_Colleague :Noam_Chomsky ;
+    :has_Daughter :Oriana ;
+    :has_Pet :Buddy .
+
+:Michele_Besso a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Michele Besso" ;
+    :birth_date "1873-05-25T00:00:00+00:00"^^xsd:dateTime ;
+    :has_Friend :Albert_Einstein .
+
+:Nelson_Mandela a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Nelson Mandela" .
+
+:New_Jersey a :State,
+        owl:NamedIndividual ;
+    rdfs:label "New Jersey" ;
+    :contains :Princeton .
+
+:Non_Binary a :Gender,
+        owl:NamedIndividual ;
+    rdfs:label "Non Binary" .
+
+:North_America a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "North America" ;
+    :contains :Canada,
+        :USA .
+
+:Pet a owl:Class ;
+    rdfs:label "Pet" ;
+    rdfs:subClassOf :Living_Thing ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Animal [ a owl:Class ;
+                        owl:complementOf :Human ] [ a owl:Restriction ;
+                        owl:onProperty :is_Pet_Of ;
+                        owl:someValuesFrom :Human ] ) ] ;
+    skos:definition "A Pet is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Philip_Marlowe a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Philip Marlowe" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Big_Sleep> .
+
+:Planet a owl:Class ;
+    rdfs:label "Planet" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A Planet is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Province a owl:Class ;
+    rdfs:label "Province" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A Province is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Region a owl:Class ;
+    rdfs:label "Region" ;
+    rdfs:subClassOf :Orgonization_Component ;
+    skos:definition "A Region is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Reptile a owl:Class ;
+    rdfs:label "Reptile" ;
+    rdfs:subClassOf :Vertebrate ;
+    skos:definition "A Reptile is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Rex a :Dog,
+        owl:NamedIndividual ;
+    rdfs:label "Rex" .
+
+:Rosalind_Franklin a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Rosalind Franklin" ;
+    :birth_date "1920-07-25T00:00:00+00:00"^^xsd:dateTime ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Rosalind_Franklin> .
+
+:Rumi a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Rumi" .
+
+:Sales_Office a owl:Class ;
+    rdfs:label "Sales Office" ;
+    rdfs:subClassOf :Orgonization_Component ;
+    skos:definition "A Sales Office is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Sam_Spade a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Sam Spade" ;
+    :has_Address :Address_Of_Spade_Detective_Agency ;
+    :has_employer :Sam_Spade ;
+    :phone "(415) 555-1212" ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Maltese_Falcon_(novel)> .
+
+:South_America a :Continent,
+        owl:NamedIndividual ;
+    rdfs:label "South America" ;
+    :contains :Brazil .
+
+:Spiny_Norman a :Hedgehog,
+        owl:NamedIndividual ;
+    rdfs:label "Spiny Norman" ;
+    :wikidata <https://www.wikidata.org/wiki/Q7569306> ;
+    rdfs:isDefinedBy <https://www.youtube.com/watch?v=C-FDW1shmqA> .
+
+:Srinivasa_Ramanujan a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Srinivasa Ramanujan" .
+
+:USA a :Nation,
+        owl:NamedIndividual ;
+    rdfs:label "USA" ;
+    :contains :California,
+        :Illinois,
+        :Massachusetts,
+        :New_Jersey ;
+    :wikidata <https://www.wikidata.org/wiki/Q30> .
+
+:United_Kingdom a :Nation,
+        owl:NamedIndividual ;
+    rdfs:label "United Kingdom" ;
+    :contains :London,
+        :Manchester .
+
+:University_of_California_Berkeley a :University,
+        owl:NamedIndividual ;
+    rdfs:label "University of California Berkeley" ;
+    :has_city :Berkeley ;
+    rdfs:isDefinedBy <https://www.berkeley.edu/> .
+
+:Vancouver a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Vancouver" .
+
+:Whiskers a :Cat,
+        owl:NamedIndividual ;
+    rdfs:label "Whiskers" ;
+    :is_Pet_Of :Oriana .
+
+:contains_transitive a owl:ObjectProperty,
+        owl:TransitiveProperty ;
+    rdfs:label "contains transitive" ;
+    rdfs:domain :Place ;
+    rdfs:range :Place ;
+    owl:inverseOf :is_contained_in_transitive ;
+    skos:definition "The property ‘contains transitive’ is a relation between Place and Place. It is the super-property for ‘contains’. This means that if a subject x contains y then x contains transitive y. It has inverse ‘is contained in transitive’, which means that if x contains transitive y then y is contained in transitive x. It is transitive which means that if x relates to y and y relates to z, then x relates to z. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Aunt a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has aunt" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    owl:inverseOf :is_Aunt_Of ;
+    skos:definition "The property ‘has aunt’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x has aunt y then x has family relationship y. It has inverse ‘is aunt of’, which means that if x has aunt y then y is aunt of x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Brother a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has brother" ;
+    rdfs:range [ a owl:Class ;
+            owl:unionOf ( :Boy :Man ) ] ;
+    rdfs:subPropertyOf :has_Sibling ;
+    skos:definition "The property ‘has brother’ is a relation between Thing and Thing. It is a sub-property of ‘has sibling’. This means that if x has brother y then x has sibling y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Husband a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has husband" ;
+    rdfs:range :Man ;
+    rdfs:subPropertyOf :has_Spouse ;
+    skos:definition "The property ‘has husband’ is a relation between Thing and Man. It is a sub-property of ‘has spouse’. This means that if x has husband y then x has spouse y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Sister a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has sister" ;
+    rdfs:range [ a owl:Restriction ;
+            owl:hasValue :Female ;
+            owl:onProperty :has_Gender ] ;
+    rdfs:subPropertyOf :has_Sibling ;
+    skos:definition "The property ‘has sister’ is a relation between Thing and Thing. It is a sub-property of ‘has sibling’. This means that if x has sister y then x has sibling y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Uncle a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has uncle" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    owl:inverseOf :is_Uncle_Of ;
+    skos:definition "The property ‘has uncle’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x has uncle y then x has family relationship y. It has inverse ‘is uncle of’, which means that if x has uncle y then y is uncle of x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_city a owl:ObjectProperty ;
+    rdfs:label "has city" ;
+    rdfs:range :City ;
+    rdfs:subPropertyOf :has_Location ;
+    skos:definition "The property ‘has city’ is a relation between Thing and City. It is a sub-property of ‘has location’. This means that if x has city y then x has location y. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_employer a owl:ObjectProperty ;
+    rdfs:label "has employer" ;
+    rdfs:domain :Employee ;
+    rdfs:range :Agent ;
+    owl:inverseOf :is_Employer_Of ;
+    skos:definition "The property ‘has employer’ is a relation between Employee and Agent. It has inverse ‘is employer of’, which means that if x has employer y then y is employer of x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_Address_For a owl:ObjectProperty ;
+    rdfs:label "is address for" ;
+    skos:definition "The property ‘is address for’ is a relation between Thing and Thing. It has inverse ‘has address’, which means that if x is address for y then y has address x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_Aunt_Of a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "is aunt of" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    skos:definition "The property ‘is aunt of’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x is aunt of y then x has family relationship y. It has inverse ‘has aunt’, which means that if x is aunt of y then y has aunt x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_Employer_Of a owl:ObjectProperty ;
+    rdfs:label "is employer of" ;
+    skos:definition "The property ‘is employer of’ is a relation between Thing and Thing. It has inverse ‘has employer’, which means that if x is employer of y then y has employer x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_Member_Of a owl:ObjectProperty ;
+    rdfs:label "is member of" ;
+    rdfs:subPropertyOf :is_Part_Of ;
+    skos:definition "The property ‘is member of’ is a relation between Thing and Thing. It is a sub-property of ‘is part of’. This means that if x is member of y then x is part of y. It has inverse ‘has member’, which means that if x is member of y then y has member x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_Uncle_Of a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "is uncle of" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    skos:definition "The property ‘is uncle of’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x is uncle of y then x has family relationship y. It has inverse ‘has uncle’, which means that if x is uncle of y then y has uncle x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_subsidiary_of a owl:ObjectProperty ;
+    rdfs:label "is subsidiary of" ;
+    rdfs:subPropertyOf :is_Part_Of ;
+    skos:definition "The property ‘is subsidiary of’ is a relation between Thing and Thing. It is a sub-property of ‘is part of’. This means that if x is subsidiary of y then x is part of y. It has inverse ‘has subsidiary’, which means that if x is subsidiary of y then y has subsidiary x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Ash a :Cat,
+        owl:NamedIndividual ;
+    rdfs:label "Ash" .
+
+:Berkeley a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Berkeley" .
+
+:Berlin a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Berlin" .
+
+:Boy a owl:Class ;
+    rdfs:label "Boy" ;
+    rdfs:subClassOf :Child ;
+    owl:disjointWith :Girl ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Child [ a owl:Restriction ;
+                        owl:hasValue :Male ;
+                        owl:onProperty :has_Gender ] ) ] ;
+    skos:definition "A Boy is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Buddy a :Dog,
+        owl:NamedIndividual ;
+    rdfs:label "Buddy" .
+
+:Emmy_Noether a :Woman,
+        owl:NamedIndividual ;
+    rdfs:label "Emmy Noether" ;
+    :birth_date "1882-03-23T00:00:00+00:00"^^xsd:dateTime ;
+    :has_Friend :Albert_Einstein .
+
+:Fido a :Dog,
+        owl:NamedIndividual ;
+    rdfs:label "Fido" .
+
+:Girl a owl:Class ;
+    rdfs:label "Girl" ;
+    rdfs:subClassOf :Child ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Child [ a owl:Restriction ;
+                        owl:hasValue :Female ;
+                        owl:onProperty :has_Gender ] ) ] ;
+    skos:definition "A Girl is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Hedgehog a owl:Class ;
+    rdfs:label "Hedgehog" ;
+    rdfs:subClassOf :Mammal ;
+    skos:definition "A Hedgehog is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Jay_Gatsby a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Jay Gatsby" ;
+    :has_Friend :Nick_Carraway ;
+    :has_Social_Relationship :Daisy_Buchanan,
+        :Jordan_Baker,
+        :Tom_Buchanan ;
+    :wikidata <https://www.wikidata.org/wiki/Q7048121> ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Great_Gatsby> ;
+    owl:differentFrom :Jordan_Baker .
+
+:John_Doe a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "John Doe" ;
+    :has_Brother :Tom_Doe ;
+    :has_Daughter :Mary_Doe ;
+    :has_Friend :John_Smith ;
+    :has_Sister :Sarah_Doe ;
+    :has_Son :Jim_Doe ;
+    :has_Wife :Jane_Smith ;
+    :has_age 34 .
+
+:John_Smith a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "John Smith" ;
+    :has_age 43 .
+
+:Jordan_Baker a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Jordan Baker" ;
+    :has_Friend :Daisy_Buchanan .
+
+:Los_Angeles a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Los Angeles" .
+
+:Manchester a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Manchester" .
+
+:Mary_Doe a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Mary Doe" ;
+    :has_Mother :Jane_Smith ;
+    :has_Sister :Susan_Doe ;
+    :has_age 16 .
+
+:Nick_Carraway a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Nick Carraway" ;
+    :has_age 28 ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Great_Gatsby> .
+
+:Oriana a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Oriana" ;
+    :has_Gender :Female ;
+    :has_age 14 .
+
+:Princeton a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Princeton" .
+
+:San_Francisco a :City,
+        owl:NamedIndividual ;
+    rdfs:label "San Francisco" .
+
+:Sarah_Doe a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Sarah Doe" .
+
+:Steve a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Steve" .
+
+:Susan_Doe a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Susan Doe" .
+
+:Tom_Doe a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Tom Doe" .
+
+:Tree a owl:Class ;
+    rdfs:label "Tree" ;
+    rdfs:subClassOf :Plant ;
+    skos:definition "A Tree is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:address a swrl:Variable .
+
+:c a swrl:Variable .
+
+:city a swrl:Variable .
+
+:has_Part a owl:ObjectProperty ;
+    rdfs:label "has part" ;
+    owl:inverseOf :is_Part_Of ;
+    skos:definition "The property ‘has part’ is a relation between Thing and Thing. It is the super-property for ‘has member’, and ‘has subsidiary’. This means that if a subject x has member y then x has part y. This means that if a subject x has subsidiary y then x has part y. It has inverse ‘is part of’, which means that if x has part y then y is part of x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Sibling a owl:IrreflexiveProperty,
+        owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "has sibling" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    skos:definition "The property ‘has sibling’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x has sibling y then x has family relationship y. It is the super-property for ‘has brother’, and ‘has sister’. This means that if a subject x has brother y then x has sibling y. This means that if a subject x has sister y then x has sibling y. It is symmetric which means that if x relates to y, then y relates to x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Spouse a owl:IrreflexiveProperty,
+        owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "has spouse" ;
+    rdfs:domain :Adult ;
+    rdfs:range :Adult ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    skos:definition "The property ‘has spouse’ is a relation between Adult and Adult. It is a sub-property of ‘has family relationship’. This means that if x has spouse y then x has family relationship y. It is the super-property for ‘has husband’, and ‘has wife’. This means that if a subject x has husband y then x has spouse y. This means that if a subject x has wife y then x has spouse y. It is symmetric which means that if x relates to y, then y relates to x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_age a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "age" ;
+    rdfs:domain :Person ;
+    rdfs:range xsd:integer ;
+    skos:definition "The data property age records a Person's age as an xsd:integer value. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:example 12,
+        32 ;
+    skos:prefLabel "has age" .
+
+:is_Pet_Of a owl:ObjectProperty ;
+    rdfs:label "is pet of" ;
+    rdfs:domain :Pet ;
+    rdfs:range :Human ;
+    skos:definition "The property ‘is pet of’ is a relation between Pet and Human. It has inverse ‘has pet’, which means that if x is pet of y then y has pet x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_contained_in a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "is contained in" ;
+    rdfs:subPropertyOf :is_contained_in_transitive ;
+    skos:definition "The property ‘is contained in’ is a relation between Thing and Thing. It is a sub-property of ‘is contained in transitive’. This means that if x is contained in y then x is contained in transitive y. It has inverse ‘contains’, which means that if x is contained in y then y contains x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_contained_in_transitive a owl:ObjectProperty,
+        owl:TransitiveProperty ;
+    rdfs:label "is contained in transitive" ;
+    skos:definition "The property ‘is contained in transitive’ is a relation between Thing and Thing. It is the super-property for ‘is contained in’. This means that if a subject x is contained in y then x is contained in transitive y. It has inverse ‘contains transitive’, which means that if x is contained in transitive y then y contains transitive x. It is transitive which means that if x relates to y and y relates to z, then x relates to z. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:p a swrl:Variable .
+
+:s a swrl:Variable .
+
+<http://www.semanticweb.org/mdebe/ontologies/example#b> a swrl:Variable .
+
+<http://www.semanticweb.org/mdebe/ontologies/example#c> a swrl:Variable .
+
+<http://www.semanticweb.org/mdebe/ontologies/example#p> a swrl:Variable .
+
+:California a :State,
+        owl:NamedIndividual ;
+    rdfs:label "California" ;
+    :contains :Berkeley,
+        :Los_Angeles,
+        :San_Francisco .
+
+:Cambridge a :City,
+        owl:NamedIndividual ;
+    rdfs:label "Cambridge" .
+
+:Gender a owl:Class ;
+    rdfs:label "Gender" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:oneOf ( :Female :Male :Non_Binary ) ] ;
+    skos:definition "A Gender is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Jane_Smith a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Jane Smith" .
+
+:London a :City,
+        owl:NamedIndividual ;
+    rdfs:label "London" .
+
+:Noam_Chomsky a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Noam Chomsky" ;
+    :birth_date "1928-12-07T00:00:00+00:00"^^xsd:dateTime ;
+    :email "chomsky@mit.edu" ;
+    :employee_id "MIT-1953" ;
+    :has_age 96 ;
+    :hired_on_date "1955-01-01T00:00:00"^^xsd:dateTime ;
+    :wikidata <https://www.wikidata.org/wiki/Q112150900> ;
+    rdfs:isDefinedBy <https://chomsky.info/> .
+
+:Tom_Buchanan a owl:NamedIndividual ;
+    rdfs:label "Tom Buchanan" ;
+    :has_Wife :Daisy_Buchanan ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Great_Gatsby> .
+
+:eats a owl:ObjectProperty ;
+    rdfs:label "eats" ;
+    rdfs:domain :Animal ;
+    rdfs:range :Living_Thing ;
+    skos:definition "The property ‘eats’ is a relation between Animal and Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Location a owl:ObjectProperty ;
+    rdfs:label "has location" ;
+    rdfs:range :Place ;
+    skos:definition "The property ‘has location’ is a relation between Thing and Place. It is the super-property for ‘has address’, ‘has state’, and ‘has city’. This means that if a subject x has address y then x has location y. This means that if a subject x has state y then x has location y. This means that if a subject x has city y then x has location y. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Parent a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has parent" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    skos:definition "The property ‘has parent’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x has parent y then x has family relationship y. It is the super-property for ‘has father’, and ‘has mother’. This means that if a subject x has father y then x has parent y. This means that if a subject x has mother y then x has parent y. It has inverse ‘has child’, which means that if x has parent y then y has child x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:is_Part_Of a owl:ObjectProperty ;
+    rdfs:label "is part of" ;
+    skos:definition "The property ‘is part of’ is a relation between Thing and Thing. It is the super-property for ‘is member of’, and ‘is subsidiary of’. This means that if a subject x is member of y then x is part of y. This means that if a subject x is subsidiary of y then x is part of y. It has inverse ‘has part’, which means that if x is part of y then y has part x. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+skos:note a owl:AnnotationProperty ;
+    rdfs:label "note"@en ;
+    rdfs:isDefinedBy <https://www.w3.org/2012/09/odrl/semantic/draft/doco/http___www.w3.org_2004_02_skos_core.html> ;
+    skos:definition "A general note, for any purpose."@en .
+
+:Alan_Turing a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Alan Turing" ;
+    :birth_date "1912-06-23T00:00:00+00:00"^^xsd:dateTime ;
+    :employee_id "999-99-9999" ;
+    :has_Colleague :John_von_Neumann .
+
+:Cat a owl:Class ;
+    rdfs:label "Cat" ;
+    rdfs:subClassOf :Mammal ;
+    skos:definition "A Cat is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Child a owl:Class ;
+    rdfs:label "Child" ;
+    rdfs:subClassOf :Person ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Person [ a owl:Restriction ;
+                        owl:onProperty :has_age ;
+                        owl:someValuesFrom [ a rdfs:Datatype ;
+                                owl:onDatatype xsd:integer ;
+                                owl:withRestrictions ( [ xsd:maxExclusive 18 ] ) ] ] ) ] ;
+    skos:definition "A Child is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Dog a owl:Class ;
+    rdfs:label "Dog" ;
+    rdfs:subClassOf :Mammal ;
+    skos:definition "A Dog is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Employee a owl:Class ;
+    rdfs:label "Employee" ;
+    rdfs:subClassOf :Person ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Person [ a owl:Restriction ;
+                        owl:onProperty :has_employer ;
+                        owl:someValuesFrom :Agent ] ) ] ;
+    skos:definition "A Employee is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Fish a owl:Class ;
+    rdfs:label "Fish" ;
+    rdfs:subClassOf :Vertebrate ;
+    skos:definition "A Fish is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Male a owl:NamedIndividual ;
+    rdfs:label "Male" .
+
+:Research_Institute a owl:Class ;
+    rdfs:label "Research Institute" ;
+    rdfs:subClassOf :Organization ;
+    skos:definition "A Research Institute is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Adult a owl:Class ;
+    rdfs:label "Adult" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Person [ a owl:Restriction ;
+                        owl:onProperty :has_age ;
+                        owl:someValuesFrom [ a rdfs:Datatype ;
+                                owl:onDatatype xsd:integer ;
+                                owl:withRestrictions ( [ xsd:minInclusive 18 ] ) ] ] ) ] ;
+    skos:definition "A Adult is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Corporation a owl:Class ;
+    rdfs:label "Corporation" ;
+    rdfs:subClassOf :Organization ;
+    skos:definition "A Corporation is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Daisy_Buchanan a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "Daisy Buchanan" ;
+    :has_Friend :John_Doe ;
+    :has_Husband :Tom_Buchanan ;
+    :has_age 32 ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/The_Great_Gatsby> .
+
+:John_von_Neumann a :Person,
+        owl:NamedIndividual ;
+    rdfs:label "John von Neumann" ;
+    :birth_date "1903-12-28T00:00:00+00:00"^^xsd:dateTime ;
+    :employee_id "999-00-1234",
+        "999-00-4321" ;
+    :has_employer :IBM,
+        :Institute_For_Advanced_Study ;
+    :hired_on_date "1954-01-01T00:00:00"^^xsd:dateTime .
+
+:Living_Thing a owl:Class ;
+    rdfs:label "Living Thing" ;
+    skos:definition "A Living Thing is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Orgonization_Component a owl:Class ;
+    rdfs:label "Orgonization Component" ;
+    rdfs:subClassOf :Organization ;
+    skos:definition "A Orgonization Component is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Plant a owl:Class ;
+    rdfs:label "Plant" ;
+    rdfs:subClassOf :Living_Thing ;
+    skos:definition "A Plant is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:State a owl:Class ;
+    rdfs:label "State" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A State is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Vertebrate a owl:Class ;
+    rdfs:label "Vertebrate" ;
+    rdfs:subClassOf :Animal ;
+    skos:definition "A Vertebrate is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Child a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has child" ;
+    rdfs:subPropertyOf :has_Family_Relationship ;
+    owl:inverseOf :has_Parent ;
+    skos:definition "The property ‘has child’ is a relation between Thing and Thing. It is a sub-property of ‘has family relationship’. This means that if x has child y then x has family relationship y. It is the super-property for ‘has daughter’, and ‘has son’. This means that if a subject x has daughter y then x has child y. This means that if a subject x has son y then x has child y. It has inverse ‘has parent’, which means that if x has child y then y has parent x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Gender a owl:FunctionalProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has gender" ;
+    rdfs:domain :Animal ;
+    rdfs:range :Gender ;
+    skos:definition "The property ‘has gender’ is a relation between Animal and Gender. It is functional which means that each subject can relate to at most one object by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Social_Relationship a owl:IrreflexiveProperty,
+        owl:ObjectProperty,
+        owl:SymmetricProperty ;
+    rdfs:label "has social relationship" ;
+    rdfs:domain :Person ;
+    rdfs:range :Person ;
+    skos:definition "The property ‘has social relationship’ is a relation between Person and Person. It is the super-property for ‘has colleague’, ‘has family relationship’, and ‘has friend’. This means that if a subject x has colleague y then x has social relationship y. This means that if a subject x has family relationship y then x has social relationship y. This means that if a subject x has friend y then x has social relationship y. It is symmetric which means that if x relates to y, then y relates to x. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Agent a owl:Class ;
+    rdfs:label "Agent" ;
+    skos:definition "A Agent is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Mammal a owl:Class ;
+    rdfs:label "Mammal" ;
+    rdfs:subClassOf :Vertebrate ;
+    skos:definition "A Mammal is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Nation a owl:Class ;
+    rdfs:label "Nation" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A Nation is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Organization a owl:Class ;
+    rdfs:label "Organization" ;
+    :wikidata <https://www.wikidata.org/wiki/Q43229> ;
+    rdfs:subClassOf :Agent ;
+    skos:definition "A Organization is a kind of Agent. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:University a owl:Class ;
+    rdfs:label "University" ;
+    rdfs:subClassOf :Organization ;
+    skos:definition "A University is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Address a owl:Class ;
+    rdfs:label "Address" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A Address is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Animal a owl:Class ;
+    rdfs:label "Animal" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :eats ;
+            owl:someValuesFrom :Living_Thing ],
+        :Living_Thing ;
+    owl:disjointWith :Plant ;
+    skos:definition "A Animal is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Continent a owl:Class ;
+    rdfs:label "Continent" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A Continent is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Female a :Gender,
+        owl:NamedIndividual ;
+    rdfs:label "Female" .
+
+:Human a owl:Class ;
+    rdfs:label "Human" ;
+    rdfs:subClassOf :Mammal ;
+    skos:definition "A Human is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:has_Family_Relationship a owl:IrreflexiveProperty,
+        owl:ObjectProperty ;
+    rdfs:label "has family relationship" ;
+    rdfs:subPropertyOf :has_Social_Relationship ;
+    skos:definition "The property ‘has family relationship’ is a relation between Thing and Thing. It is a sub-property of ‘has social relationship’. This means that if x has family relationship y then x has social relationship y. It is the super-property for ‘has aunt’, ‘has child’, ‘has parent’, ‘has sibling’, ‘has spouse’, ‘has uncle’, ‘is aunt of’, and ‘is uncle of’. This means that if a subject x has aunt y then x has family relationship y. This means that if a subject x has child y then x has family relationship y. This means that if a subject x has parent y then x has family relationship y. This means that if a subject x has sibling y then x has family relationship y. This means that if a subject x has spouse y then x has family relationship y. This means that if a subject x has uncle y then x has family relationship y. This means that if a subject x is aunt of y then x has family relationship y. This means that if a subject x is uncle of y then x has family relationship y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Albert_Einstein a :Man,
+        owl:NamedIndividual ;
+    rdfs:label "Albert Einstein" ;
+    :birth_date "1879-03-14T00:00:00+00:00"^^xsd:dateTime ;
+    :employee_id "999-99-1234" ;
+    :has_Colleague :Emmy_Noether,
+        :John_von_Neumann ;
+    :hired_on_date "1933-10-01T00:00:00"^^xsd:dateTime ;
+    :nobel_prize_winner true ;
+    :phone "+1 (609) 555-1234" ;
+    :wikidata <https://www.wikidata.org/wiki/Q937> ;
+    rdfs:isDefinedBy <https://en.wikipedia.org/wiki/Albert_Einstein> .
+
+:Place a owl:Class ;
+    rdfs:label "Place" ;
+    skos:definition "A Place is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:City a owl:Class ;
+    rdfs:label "City" ;
+    rdfs:subClassOf :Place ;
+    skos:definition "A City is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Woman a owl:Class ;
+    rdfs:label "Woman" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Adult [ a owl:Restriction ;
+                        owl:hasValue :Female ;
+                        owl:onProperty :has_Gender ] ) ] ;
+    skos:definition "A Woman is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Man a owl:Class ;
+    rdfs:label "Man" ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( :Adult [ a owl:Restriction ;
+                        owl:hasValue :Male ;
+                        owl:onProperty :has_Gender ] ) ] ;
+    skos:definition "A Man is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:subClassOf :Agent,
+        :Human ;
+    skos:definition "A Person is a kind of Agent. A Person is a kind of Human. ⟦AUTOGEN:P1:2025-09-03⟧" .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :Ash :Creme_Puff :Whiskers ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :Buddy :Fido :Rex ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :Daisy_Buchanan :Jane_Smith :John_Doe :John_Smith :Mary_Doe :Sarah_Doe :Susan_Doe :Tom_Doe ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :Daisy_Buchanan :Jay_Gatsby :Nick_Carraway :Tom_Buchanan ) .
+
+[] a swrl:Imp ;
+    rdfs:label "Uncle_Rule" ;
+    swrla:isRuleEnabled true ;
+    rdfs:comment "" ;
+    swrl:body [ a swrl:AtomList ;
+            rdf:first [ a swrl:IndividualPropertyAtom ;
+                    swrl:argument1 <http://www.semanticweb.org/mdebe/ontologies/example#p> ;
+                    swrl:argument2 <http://www.semanticweb.org/mdebe/ontologies/example#b> ;
+                    swrl:propertyPredicate :has_Brother ] ;
+            rdf:rest [ a swrl:AtomList ;
+                    rdf:first [ a swrl:IndividualPropertyAtom ;
+                            swrl:argument1 <http://www.semanticweb.org/mdebe/ontologies/example#p> ;
+                            swrl:argument2 <http://www.semanticweb.org/mdebe/ontologies/example#c> ;
+                            swrl:propertyPredicate :has_Child ] ;
+                    rdf:rest () ] ] ;
+    swrl:head [ a swrl:AtomList ;
+            rdf:first [ a swrl:IndividualPropertyAtom ;
+                    swrl:argument1 <http://www.semanticweb.org/mdebe/ontologies/example#c> ;
+                    swrl:argument2 <http://www.semanticweb.org/mdebe/ontologies/example#b> ;
+                    swrl:propertyPredicate :has_Uncle ] ;
+            rdf:rest () ] .
+
+[] a swrl:Imp ;
+    rdfs:label "Aunt_Rule" ;
+    swrla:isRuleEnabled true ;
+    rdfs:comment "" ;
+    swrl:body [ a swrl:AtomList ;
+            rdf:first [ a swrl:IndividualPropertyAtom ;
+                    swrl:argument1 :p ;
+                    swrl:argument2 :c ;
+                    swrl:propertyPredicate :has_Child ] ;
+            rdf:rest [ a swrl:AtomList ;
+                    rdf:first [ a swrl:IndividualPropertyAtom ;
+                            swrl:argument1 :p ;
+                            swrl:argument2 :s ;
+                            swrl:propertyPredicate :has_Sister ] ;
+                    rdf:rest () ] ] ;
+    swrl:head [ a swrl:AtomList ;
+            rdf:first [ a swrl:IndividualPropertyAtom ;
+                    swrl:argument1 :c ;
+                    swrl:argument2 :s ;
+                    swrl:propertyPredicate :has_Aunt ] ;
+            rdf:rest () ] .
+
+[] a swrl:Imp ;
+    rdfs:label "Address_Rule" ;
+    swrla:isRuleEnabled true ;
+    rdfs:comment "" ;
+    swrl:body [ a swrl:AtomList ;
+            rdf:first [ a swrl:IndividualPropertyAtom ;
+                    swrl:argument1 :address ;
+                    swrl:argument2 :city ;
+                    swrl:propertyPredicate :has_city ] ;
+            rdf:rest () ] ;
+    swrl:head [ a swrl:AtomList ;
+            rdf:first [ a swrl:IndividualPropertyAtom ;
+                    swrl:argument1 :address ;
+                    swrl:argument2 :city ;
+                    swrl:propertyPredicate :is_contained_in ] ;
+            rdf:rest () ] .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :Bird :Fish :Mammal :Reptile ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :Cat :Dog :Hedgehog :Human ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :Corporation :Division :Region :Research_Institute :Sales_Office :University ) .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :Albert_Einstein :Elsa_Einstein :Emmy_Noether :Kurt_Godel :Lise_Meitner :Michele_Besso ) .
+
