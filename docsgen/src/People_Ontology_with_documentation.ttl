@@ -80,7 +80,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
             owl:allValuesFrom :Grass ;
             owl:onProperty :eats ],
         :Mammal ;
-    skos:definition "A Cow is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Cow is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Cow’ is a kind of Mammal. A ‘Cow’ is a kind of only has ‘eats’ to Grass. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Dinsdale_Piranha a :Man,
         owl:NamedIndividual ;
@@ -105,7 +106,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
             owl:intersectionOf ( :Woman [ a owl:Restriction ;
                         owl:hasValue :Albert_Einstein ;
                         owl:onProperty :has_Husband ] ) ] ;
-    skos:definition "A Einstein's Wife is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Einstein's Wife is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Einstein's Wife’ is equivalent to both Woman and has ‘has husband’ value Albert Einstein. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Emmanuelle_Charpentier a :Woman,
         owl:NamedIndividual ;
@@ -127,7 +129,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
 :Gold_Fish a owl:Class ;
     rdfs:label "Gold Fish" ;
     rdfs:subClassOf :Fish ;
-    skos:definition "A Gold Fish is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Gold Fish is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Gold Fish’ is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Gustav_Mahler a :Man,
         owl:NamedIndividual ;
@@ -142,7 +145,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
             owl:intersectionOf ( :Animal [ a owl:Restriction ;
                         owl:allValuesFrom :Plant ;
                         owl:onProperty :eats ] ) ] ;
-    skos:definition "A Herbivore is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Herbivore is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Herbivore’ is equivalent to both Animal and only has ‘eats’ to Plant. A ‘Herbivore’ is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Hermit a owl:Class ;
     rdfs:label "Hermit" ;
@@ -151,7 +155,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
                         owl:onClass :Person ;
                         owl:onProperty :has_Social_Relationship ;
                         owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ] ) ] ;
-    skos:definition "A Hermit is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Hermit is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Hermit’ is equivalent to both Person and has exactly 0 ‘has social relationship’ to Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Howard_Aiken a :Person,
         owl:NamedIndividual ;
@@ -166,7 +171,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
     rdfs:label "Insect" ;
     rdfs:subClassOf :Animal ;
     owl:disjointWith :Vertebrate ;
-    skos:definition "A Insect is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Insect is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Insect’ is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :James_Gatz a owl:NamedIndividual ;
     rdfs:label "James Gatz" ;
@@ -230,7 +236,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
 :Organization_Unit a owl:Class ;
     rdfs:label "Organization Unit" ;
     rdfs:subClassOf :Orgonization_Component ;
-    skos:definition "A Organization Unit is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Organization Unit is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Organization Unit’ is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Oskar_Morgenstern a :Man,
         owl:NamedIndividual ;
@@ -243,17 +250,20 @@ Orcid ID: 0000-0002-8824-9577""" ;
             owl:intersectionOf ( :Adult [ a owl:Restriction ;
                         owl:onProperty :has_Child ;
                         owl:someValuesFrom :Person ] ) ] ;
-    skos:definition "A Parent is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Parent is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Parent’ is equivalent to both Adult and has at least one ‘has child’ to Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Rose a owl:Class ;
     rdfs:label "Rose" ;
     rdfs:subClassOf :Flower ;
-    skos:definition "A Rose is a kind of Flower. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Rose is a kind of Flower. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Rose’ is a kind of Flower. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Self_Employee a owl:Class ;
     rdfs:label "Self Employee" ;
     rdfs:subClassOf :Employee ;
-    skos:definition "A Self Employee is a kind of Employee. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Self Employee is a kind of Employee. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Self Employee’ is a kind of Employee. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Sherlock_Holmes a :Man,
         owl:NamedIndividual ;
@@ -269,7 +279,8 @@ Orcid ID: 0000-0002-8824-9577""" ;
                         owl:minQualifiedCardinality "5"^^xsd:nonNegativeInteger ;
                         owl:onClass :Person ;
                         owl:onProperty :has_Social_Relationship ] ) ] ;
-    skos:definition "A Social Person is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Social Person is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Social Person’ is equivalent to both Person and has at least 5 ‘has social relationship’ to Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Sun_Microsystems a :Corporation,
         owl:NamedIndividual ;
@@ -337,7 +348,7 @@ Orcid ID: 0000-0002-8824-9577""" ;
     rdfs:range [ a owl:Class ;
             owl:unionOf ( :Girl :Woman ) ] ;
     rdfs:subPropertyOf :has_Child ;
-    skos:definition "The property ‘has daughter’ is a relation between Thing and Thing. It is a sub-property of ‘has child’. This means that if x has daughter y then x has child y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "The property ‘has daughter’ is a relation between Thing and either Girl or Woman. It is a sub-property of ‘has child’. This means that if x has daughter y then x has child y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :has_Father a owl:IrreflexiveProperty,
         owl:ObjectProperty ;
@@ -381,7 +392,7 @@ Orcid ID: 0000-0002-8824-9577""" ;
     rdfs:range [ a owl:Class ;
             owl:unionOf ( :Boy :Man ) ] ;
     rdfs:subPropertyOf :has_Child ;
-    skos:definition "The property ‘has son’ is a relation between Thing and Thing. It is a sub-property of ‘has child’. This means that if x has son y then x has child y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "The property ‘has son’ is a relation between Thing and either Boy or Man. It is a sub-property of ‘has child’. This means that if x has son y then x has child y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :has_State a owl:ObjectProperty ;
     rdfs:label "has state" ;
@@ -542,7 +553,8 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Bird a owl:Class ;
     rdfs:label "Bird" ;
     rdfs:subClassOf :Vertebrate ;
-    skos:definition "A Bird is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Bird is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Bird’ is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Brazil a :Nation,
         owl:NamedIndividual ;
@@ -575,7 +587,8 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Division a owl:Class ;
     rdfs:label "Division" ;
     rdfs:subClassOf :Orgonization_Component ;
-    skos:definition "A Division is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Division is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Division’ is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Doctor_Watson a :Person,
         owl:NamedIndividual ;
@@ -606,7 +619,8 @@ skos:prefLabel a owl:AnnotationProperty ;
     rdfs:label "Flower" ;
     rdfs:subClassOf :Plant ;
     owl:disjointWith :Tree ;
-    skos:definition "A Flower is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Flower is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Flower’ is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Germany a :Nation,
         owl:NamedIndividual ;
@@ -622,17 +636,20 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Grass a owl:Class ;
     rdfs:label "Grass" ;
     rdfs:subClassOf :Plant ;
-    skos:definition "A Grass is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Grass is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Grass’ is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Haddock a owl:Class ;
     rdfs:label "Haddock" ;
     rdfs:subClassOf :Fish ;
-    skos:definition "A Haddock is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Haddock is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Haddock’ is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Halibut a owl:Class ;
     rdfs:label "Halibut" ;
     rdfs:subClassOf :Fish ;
-    skos:definition "A Halibut is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Halibut is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Halibut’ is a kind of Fish. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Harvard_University a :University,
         owl:NamedIndividual ;
@@ -686,7 +703,8 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Larch a owl:Class ;
     rdfs:label "Larch" ;
     rdfs:subClassOf :Tree ;
-    skos:definition "A Larch is a kind of Tree. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Larch is a kind of Tree. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Larch’ is a kind of Tree. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Lise_Meitner a :Woman,
         owl:NamedIndividual ;
@@ -755,7 +773,8 @@ skos:prefLabel a owl:AnnotationProperty ;
                         owl:complementOf :Human ] [ a owl:Restriction ;
                         owl:onProperty :is_Pet_Of ;
                         owl:someValuesFrom :Human ] ) ] ;
-    skos:definition "A Pet is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Pet is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Pet’ is equivalent to all of Animal, n1b85d7c2e0444636b1084a0df20c0537b64, and has at least one ‘is pet of’ to Human. A ‘Pet’ is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Philip_Marlowe a :Man,
         owl:NamedIndividual ;
@@ -765,22 +784,26 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Planet a owl:Class ;
     rdfs:label "Planet" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A Planet is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Planet is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Planet’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Province a owl:Class ;
     rdfs:label "Province" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A Province is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Province is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Province’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Region a owl:Class ;
     rdfs:label "Region" ;
     rdfs:subClassOf :Orgonization_Component ;
-    skos:definition "A Region is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Region is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Region’ is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Reptile a owl:Class ;
     rdfs:label "Reptile" ;
     rdfs:subClassOf :Vertebrate ;
-    skos:definition "A Reptile is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Reptile is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Reptile’ is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Rex a :Dog,
         owl:NamedIndividual ;
@@ -799,7 +822,8 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Sales_Office a owl:Class ;
     rdfs:label "Sales Office" ;
     rdfs:subClassOf :Orgonization_Component ;
-    skos:definition "A Sales Office is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Sales Office is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Sales Office’ is a kind of Orgonization Component. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Sam_Spade a :Man,
         owl:NamedIndividual ;
@@ -875,7 +899,7 @@ skos:prefLabel a owl:AnnotationProperty ;
     rdfs:range [ a owl:Class ;
             owl:unionOf ( :Boy :Man ) ] ;
     rdfs:subPropertyOf :has_Sibling ;
-    skos:definition "The property ‘has brother’ is a relation between Thing and Thing. It is a sub-property of ‘has sibling’. This means that if x has brother y then x has sibling y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "The property ‘has brother’ is a relation between Thing and either Boy or Man. It is a sub-property of ‘has sibling’. This means that if x has brother y then x has sibling y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :has_Husband a owl:IrreflexiveProperty,
         owl:ObjectProperty ;
@@ -891,7 +915,7 @@ skos:prefLabel a owl:AnnotationProperty ;
             owl:hasValue :Female ;
             owl:onProperty :has_Gender ] ;
     rdfs:subPropertyOf :has_Sibling ;
-    skos:definition "The property ‘has sister’ is a relation between Thing and Thing. It is a sub-property of ‘has sibling’. This means that if x has sister y then x has sibling y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "The property ‘has sister’ is a relation between Thing and n1b85d7c2e0444636b1084a0df20c0537b7. It is a sub-property of ‘has sibling’. This means that if x has sister y then x has sibling y. It is irreflexive which means that no individual relates to itself by this property. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :has_Uncle a owl:IrreflexiveProperty,
         owl:ObjectProperty ;
@@ -963,7 +987,8 @@ skos:prefLabel a owl:AnnotationProperty ;
             owl:intersectionOf ( :Child [ a owl:Restriction ;
                         owl:hasValue :Male ;
                         owl:onProperty :has_Gender ] ) ] ;
-    skos:definition "A Boy is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Boy is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Boy’ is equivalent to both Child and has ‘has gender’ value Male. A ‘Boy’ is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Buddy a :Dog,
         owl:NamedIndividual ;
@@ -986,12 +1011,14 @@ skos:prefLabel a owl:AnnotationProperty ;
             owl:intersectionOf ( :Child [ a owl:Restriction ;
                         owl:hasValue :Female ;
                         owl:onProperty :has_Gender ] ) ] ;
-    skos:definition "A Girl is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Girl is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Girl’ is equivalent to both Child and has ‘has gender’ value Female. A ‘Girl’ is a kind of Child. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Hedgehog a owl:Class ;
     rdfs:label "Hedgehog" ;
     rdfs:subClassOf :Mammal ;
-    skos:definition "A Hedgehog is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Hedgehog is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Hedgehog’ is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Jay_Gatsby a :Man,
         owl:NamedIndividual ;
@@ -1079,7 +1106,8 @@ skos:prefLabel a owl:AnnotationProperty ;
 :Tree a owl:Class ;
     rdfs:label "Tree" ;
     rdfs:subClassOf :Plant ;
-    skos:definition "A Tree is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Tree is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Tree’ is a kind of Plant. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :address a swrl:Variable .
 
@@ -1160,7 +1188,8 @@ skos:prefLabel a owl:AnnotationProperty ;
     rdfs:label "Gender" ;
     owl:equivalentClass [ a owl:Class ;
             owl:oneOf ( :Female :Male :Non_Binary ) ] ;
-    skos:definition "A Gender is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Gender is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Gender’ is equivalent to n1b85d7c2e0444636b1084a0df20c0537b39. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Jane_Smith a :Person,
         owl:NamedIndividual ;
@@ -1222,7 +1251,8 @@ skos:note a owl:AnnotationProperty ;
 :Cat a owl:Class ;
     rdfs:label "Cat" ;
     rdfs:subClassOf :Mammal ;
-    skos:definition "A Cat is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Cat is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Cat’ is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Child a owl:Class ;
     rdfs:label "Child" ;
@@ -1233,12 +1263,14 @@ skos:note a owl:AnnotationProperty ;
                         owl:someValuesFrom [ a rdfs:Datatype ;
                                 owl:onDatatype xsd:integer ;
                                 owl:withRestrictions ( [ xsd:maxExclusive 18 ] ) ] ] ) ] ;
-    skos:definition "A Child is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Child is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Child’ is equivalent to both Person and has at least one ‘age’ value that is an xsd:integer < 18. A ‘Child’ is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Dog a owl:Class ;
     rdfs:label "Dog" ;
     rdfs:subClassOf :Mammal ;
-    skos:definition "A Dog is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Dog is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Dog’ is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Employee a owl:Class ;
     rdfs:label "Employee" ;
@@ -1247,12 +1279,14 @@ skos:note a owl:AnnotationProperty ;
             owl:intersectionOf ( :Person [ a owl:Restriction ;
                         owl:onProperty :has_employer ;
                         owl:someValuesFrom :Agent ] ) ] ;
-    skos:definition "A Employee is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Employee is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Employee’ is equivalent to both Person and has at least one ‘has employer’ to Agent. A ‘Employee’ is a kind of Person. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Fish a owl:Class ;
     rdfs:label "Fish" ;
     rdfs:subClassOf :Vertebrate ;
-    skos:definition "A Fish is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Fish is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Fish’ is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Male a owl:NamedIndividual ;
     rdfs:label "Male" .
@@ -1260,7 +1294,8 @@ skos:note a owl:AnnotationProperty ;
 :Research_Institute a owl:Class ;
     rdfs:label "Research Institute" ;
     rdfs:subClassOf :Organization ;
-    skos:definition "A Research Institute is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Research Institute is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Research Institute’ is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Adult a owl:Class ;
     rdfs:label "Adult" ;
@@ -1270,12 +1305,14 @@ skos:note a owl:AnnotationProperty ;
                         owl:someValuesFrom [ a rdfs:Datatype ;
                                 owl:onDatatype xsd:integer ;
                                 owl:withRestrictions ( [ xsd:minInclusive 18 ] ) ] ] ) ] ;
-    skos:definition "A Adult is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Adult is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Adult’ is equivalent to both Person and has at least one ‘age’ value that is an xsd:integer ≥ 18. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Corporation a owl:Class ;
     rdfs:label "Corporation" ;
     rdfs:subClassOf :Organization ;
-    skos:definition "A Corporation is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Corporation is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Corporation’ is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Daisy_Buchanan a :Person,
         owl:NamedIndividual ;
@@ -1302,22 +1339,26 @@ skos:note a owl:AnnotationProperty ;
 :Orgonization_Component a owl:Class ;
     rdfs:label "Orgonization Component" ;
     rdfs:subClassOf :Organization ;
-    skos:definition "A Orgonization Component is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Orgonization Component is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Orgonization Component’ is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Plant a owl:Class ;
     rdfs:label "Plant" ;
     rdfs:subClassOf :Living_Thing ;
-    skos:definition "A Plant is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Plant is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Plant’ is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :State a owl:Class ;
     rdfs:label "State" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A State is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A State is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘State’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Vertebrate a owl:Class ;
     rdfs:label "Vertebrate" ;
     rdfs:subClassOf :Animal ;
-    skos:definition "A Vertebrate is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Vertebrate is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Vertebrate’ is a kind of Animal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :has_Child a owl:IrreflexiveProperty,
         owl:ObjectProperty ;
@@ -1348,28 +1389,33 @@ skos:note a owl:AnnotationProperty ;
 :Mammal a owl:Class ;
     rdfs:label "Mammal" ;
     rdfs:subClassOf :Vertebrate ;
-    skos:definition "A Mammal is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Mammal is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Mammal’ is a kind of Vertebrate. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Nation a owl:Class ;
     rdfs:label "Nation" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A Nation is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Nation is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Nation’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Organization a owl:Class ;
     rdfs:label "Organization" ;
     :wikidata <https://www.wikidata.org/wiki/Q43229> ;
     rdfs:subClassOf :Agent ;
-    skos:definition "A Organization is a kind of Agent. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Organization is a kind of Agent. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Organization’ is a kind of Agent. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :University a owl:Class ;
     rdfs:label "University" ;
     rdfs:subClassOf :Organization ;
-    skos:definition "A University is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A University is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘University’ is a kind of Organization. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Address a owl:Class ;
     rdfs:label "Address" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A Address is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Address is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Address’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Animal a owl:Class ;
     rdfs:label "Animal" ;
@@ -1378,12 +1424,14 @@ skos:note a owl:AnnotationProperty ;
             owl:someValuesFrom :Living_Thing ],
         :Living_Thing ;
     owl:disjointWith :Plant ;
-    skos:definition "A Animal is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Animal is a kind of Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Animal’ is a kind of Living Thing. A ‘Animal’ is a kind of has at least one ‘eats’ to Living Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Continent a owl:Class ;
     rdfs:label "Continent" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A Continent is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Continent is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Continent’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Female a :Gender,
         owl:NamedIndividual ;
@@ -1392,7 +1440,8 @@ skos:note a owl:AnnotationProperty ;
 :Human a owl:Class ;
     rdfs:label "Human" ;
     rdfs:subClassOf :Mammal ;
-    skos:definition "A Human is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Human is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Human’ is a kind of Mammal. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :has_Family_Relationship a owl:IrreflexiveProperty,
         owl:ObjectProperty ;
@@ -1420,7 +1469,8 @@ skos:note a owl:AnnotationProperty ;
 :City a owl:Class ;
     rdfs:label "City" ;
     rdfs:subClassOf :Place ;
-    skos:definition "A City is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A City is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘City’ is a kind of Place. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Woman a owl:Class ;
     rdfs:label "Woman" ;
@@ -1428,7 +1478,8 @@ skos:note a owl:AnnotationProperty ;
             owl:intersectionOf ( :Adult [ a owl:Restriction ;
                         owl:hasValue :Female ;
                         owl:onProperty :has_Gender ] ) ] ;
-    skos:definition "A Woman is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Woman is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Woman’ is equivalent to both Adult and has ‘has gender’ value Female. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Man a owl:Class ;
     rdfs:label "Man" ;
@@ -1436,13 +1487,15 @@ skos:note a owl:AnnotationProperty ;
             owl:intersectionOf ( :Adult [ a owl:Restriction ;
                         owl:hasValue :Male ;
                         owl:onProperty :has_Gender ] ) ] ;
-    skos:definition "A Man is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Man is a kind of Thing. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Man’ is equivalent to both Adult and has ‘has gender’ value Male. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 :Person a owl:Class ;
     rdfs:label "Person" ;
     rdfs:subClassOf :Agent,
         :Human ;
-    skos:definition "A Person is a kind of Agent. A Person is a kind of Human. ⟦AUTOGEN:P1:2025-09-03⟧" .
+    skos:definition "A Person is a kind of Agent. A Person is a kind of Human. ⟦AUTOGEN:P1:2025-09-03⟧" ;
+    skos:scopeNote "A ‘Person’ is a kind of Agent. A ‘Person’ is a kind of Human. ⟦AUTOGEN:P1:2025-09-03⟧" .
 
 [] a owl:AllDifferent ;
     owl:distinctMembers ( :Ash :Creme_Puff :Whiskers ) .

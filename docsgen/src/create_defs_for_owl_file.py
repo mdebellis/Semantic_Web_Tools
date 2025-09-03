@@ -26,7 +26,7 @@ from pathlib import Path
 from datetime import date
 
 from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef, Literal
-from rdflib.namespace import SKOS, split_uri
+from rdflib.namespace import SKOS, split_uri, XSD
 import argparse
 from datetime import datetime
 
@@ -119,6 +119,195 @@ def sentences_unique_preserve_order(sentences):
             seen.add(s)
     return out
 
+# ---------- Class Axiom Rendering (technical) ----------
+
+def _render_rdf_list(g: Graph, head: URIRef):
+    members = []
+    while head and head != RDF.nil:
+        first = g.value(head, RDF.first)
+        if first is not None:
+            members.append(first)
+        head = g.value(head, RDF.rest)
+    return members
+
+def _render_datatype_range(g: Graph, node) -> str:
+    """
+    Render a datatype or a datatype restriction into a compact technical phrase.
+    Examples:
+      xsd:integer                           -> "an xsd:integer"
+      [owl:onDatatype xsd:integer ;
+       owl:withRestrictions ( [ xsd:maxExclusive 18 ] ) ]
+                                             -> "an xsd:integer < 18"
+    """
+    # Simple datatype URI
+    if isinstance(node, URIRef):
+        return f"an {qname_or_str(g, node)}"
+
+    # Datatype restriction: onDatatype + withRestrictions
+    on_dt = g.value(node, OWL.onDatatype)
+    if on_dt is None:
+        return "a literal"
+
+    base = f"an {qname_or_str(g, on_dt)}"
+    facets = []
+
+    wr_head = g.value(node, OWL.withRestrictions)
+    if wr_head:
+        for bn in _render_rdf_list(g, wr_head):
+            for pred, val in g.predicate_objects(bn):
+                if not isinstance(pred, URIRef):
+                    continue
+                # Recognize common XSD facets
+                if pred == XSD.minInclusive:
+                    facets.append(f"≥ {val}")
+                elif pred == XSD.maxInclusive:
+                    facets.append(f"≤ {val}")
+                elif pred == XSD.minExclusive:
+                    facets.append(f"> {val}")
+                elif pred == XSD.maxExclusive:
+                    facets.append(f"< {val}")
+                elif pred == XSD.pattern:
+                    facets.append(f"matching pattern {val}")
+                elif pred == XSD.length:
+                    facets.append(f"with length = {val}")
+                elif pred == XSD.minLength:
+                    facets.append(f"with length ≥ {val}")
+                elif pred == XSD.maxLength:
+                    facets.append(f"with length ≤ {val}")
+
+    return f"{base} {' and '.join(facets)}" if facets else base
+
+
+def _is_data_range(g: Graph, node) -> bool:
+    """True if node looks like a datatype or a datatype restriction."""
+    if isinstance(node, URIRef) and str(node).startswith(str(XSD)):
+        return True
+    return g.value(node, OWL.onDatatype) is not None
+
+
+def _render_class_expr_technical(g: Graph, expr: URIRef) -> str:
+    """
+    Deterministic, technical rendering for a subset of class expressions:
+      - Named class -> its label
+      - owl:intersectionOf([...])
+      - owl:Restriction on owl:onProperty with some/all/cardinality variants
+    """
+    # unionOf / complementOf are out-of-scope for v1 (can be added later)
+    inter = g.value(expr, OWL.intersectionOf)
+    if inter:
+        parts = []
+        for m in _render_rdf_list(g, inter):
+            parts.append(_render_class_expr_technical(g, m))
+        # Technical joiner: keep "both ... and ..." for 2, or comma + and for 3+
+        if len(parts) == 1:
+            return parts[0]
+        if len(parts) == 2:
+            return f"both {parts[0]} and {parts[1]}"
+        mid = ", ".join(parts[:-1])
+        return f"all of {mid}, and {parts[-1]}"
+
+    # Restriction
+    if (expr, RDF.type, OWL.Restriction) in g:
+        p = g.value(expr, OWL.onProperty)
+        p_label = label_for(g, p) if isinstance(p, URIRef) else "<?>"
+
+        # Qualified cardinalities
+        qcard = g.value(expr, OWL.qualifiedCardinality)
+        qmin  = g.value(expr, OWL.minQualifiedCardinality)
+        qmax  = g.value(expr, OWL.maxQualifiedCardinality)
+        qcls  = g.value(expr, OWL.onClass)
+        qdr = g.value(expr, OWL.onDataRange)
+
+        # Unqualified cardinalities
+        ucard = g.value(expr, OWL.cardinality)
+        umin  = g.value(expr, OWL.minCardinality)
+        umax  = g.value(expr, OWL.maxCardinality)
+
+        some  = g.value(expr, OWL.someValuesFrom)
+        allv  = g.value(expr, OWL.allValuesFrom)
+        hasv  = g.value(expr, OWL.hasValue)
+        hasself = (expr, OWL.hasSelf, Literal(True)) in g
+
+        # Helpers
+        def cls_txt(c):
+            return label_for(g, c) if isinstance(c, URIRef) else "Thing"
+
+        # Order: explicit value/self, qualified card, unqualified, then some/all
+        if hasv is not None:
+            obj_txt = label_for(g, hasv) if isinstance(hasv, URIRef) else str(hasv)
+            return f"has ‘{p_label}’ value {obj_txt}"
+
+        if hasself:
+            return f"is related to itself by ‘{p_label}’"
+
+        # Object-side qualified cardinalities (only if onClass is present)
+        if qcard is not None and qcls is not None:
+            n = int(str(qcard))
+            return f"has exactly {n} ‘{p_label}’ to {cls_txt(qcls)}"
+
+        if qmin is not None and qcls is not None:
+            n = int(str(qmin))
+            return f"has at least {n} ‘{p_label}’ to {cls_txt(qcls)}"
+
+        if qmax is not None and qcls is not None:
+            n = int(str(qmax))
+            return f"has at most {n} ‘{p_label}’ to {cls_txt(qcls)}"
+
+        # Data-side qualified cardinalities (onDataRange)
+        if qcard is not None and qdr is not None:
+            n = int(str(qcard))
+            return f"has exactly {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
+
+        if qmin is not None and qdr is not None:
+            n = int(str(qmin))
+            return f"has at least {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
+
+        if qmax is not None and qdr is not None:
+            n = int(str(qmax))
+            return f"has at most {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
+
+        if ucard is not None:
+            n = int(str(ucard))
+            return f"has exactly {n} ‘{p_label}’"
+
+        if umin is not None:
+            n = int(str(umin))
+            return f"has at least {n} ‘{p_label}’"
+
+        if umax is not None:
+            n = int(str(umax))
+            return f"has at most {n} ‘{p_label}’"
+
+        if some is not None:
+            # Data restriction?
+            if _is_data_range(g, some) or (isinstance(p, URIRef) and (p, RDF.type, OWL.DatatypeProperty) in g):
+                return f"has at least one ‘{p_label}’ value that is {_render_datatype_range(g, some)}"
+            # Object restriction
+            return f"has at least one ‘{p_label}’ to {cls_txt(some)}"
+
+        if allv is not None:
+            # Data restriction?
+            if _is_data_range(g, allv) or (isinstance(p, URIRef) and (p, RDF.type, OWL.DatatypeProperty) in g):
+                return f"only has ‘{p_label}’ values that are {_render_datatype_range(g, allv)}"
+            # Object restriction
+            return f"only has ‘{p_label}’ to {cls_txt(allv)}"
+
+        # Fallback if a rare restriction form appears
+        return f"has a restriction on ‘{p_label}’"
+
+    # Named class or fallback
+    return label_for(g, expr)
+
+def _render_equiv_or_sub_sentence(g: Graph, cls: URIRef, expr: URIRef, relation: str) -> str:
+    """
+    relation in {'equivalent to', 'a kind of'}.
+    Produce: "A ‘Label’ is equivalent to both A and has exactly 0 ‘p’ to Person."
+    """
+    cls_label = label_for(g, cls)
+    rhs = _render_class_expr_technical(g, expr)
+    # Prepend article "A" only when starting the class sentence
+    return f"A ‘{cls_label}’ is {relation} {rhs}."
+
 # --------------------
 # Generators
 # --------------------
@@ -201,6 +390,87 @@ def add_datatype_property_definitions(g: Graph, today_iso: str):
 
     return added, updated
 
+def add_class_axiom_scope_notes(g: Graph, today_iso: str, include_scope_note: bool = True):
+    """
+    Generate AUTOGEN technical sentences for class axioms into skos:scopeNote.
+    Patterns supported (v1): intersectionOf of named classes and Restrictions; single Restrictions.
+    Writes one or more sentences for each owl:equivalentClass / rdfs:subClassOf expression.
+    Respects OVERWRITE_EXISTING_AUTOGEN for scopeNote literals containing AUTOGEN tokens.
+    """
+    if not include_scope_note:
+        return 0, 0
+
+    # Local helpers for AUTOGEN detection on scopeNote
+    def _has_autogen_scope(g: Graph, s: URIRef) -> bool:
+        for _, _, val in g.triples((s, SKOS.scopeNote, None)):
+            if isinstance(val, Literal):
+                txt = str(val)
+                if P1_TOKEN_RE.search(txt) or P2_TOKEN_RE.search(txt) or LEGACY_MARKER_RE.search(txt):
+                    return True
+        return False
+
+    def _remove_autogen_scope(g: Graph, s: URIRef):
+        to_remove = []
+        for _, p, val in g.triples((s, SKOS.scopeNote, None)):
+            if isinstance(val, Literal):
+                txt = str(val)
+                if P1_TOKEN_RE.search(txt) or P2_TOKEN_RE.search(txt) or LEGACY_MARKER_RE.search(txt):
+                    to_remove.append((s, p, val))
+        for t in to_remove:
+            g.remove(t)
+
+    classes = set(s for s in g.subjects(RDF.type, OWL.Class) if isinstance(s, URIRef))
+    classes.discard(OWL.Thing)
+    classes.discard(OWL.Nothing)
+
+    added = updated = 0
+
+    for cls in sorted(classes, key=lambda u: str(u)):
+        # Gather axiom expressions
+        exprs = []
+
+        # owl:equivalentClass
+        for _, _, e in g.triples((cls, OWL.equivalentClass, None)):
+            if isinstance(e, URIRef):
+                exprs.append(("equivalent to", e))
+            # If it's a bnode, rdflib still gives a BNode here; include anyway
+            else:
+                exprs.append(("equivalent to", e))
+
+        # rdfs:subClassOf
+        for _, _, e in g.triples((cls, RDFS.subClassOf, None)):
+            # Skip trivial OWL.Nothing and top things here
+            if e == OWL.Nothing:
+                continue
+            exprs.append(("a kind of", e))
+
+        if not exprs:
+            continue  # nothing to render
+
+        # Overwrite policy per AUTOGEN marker
+        if _has_autogen_scope(g, cls) and not OVERWRITE_EXISTING_AUTOGEN:
+            continue
+        if OVERWRITE_EXISTING_AUTOGEN and _has_autogen_scope(g, cls):
+            _remove_autogen_scope(g, cls)
+            updated += 1
+        else:
+            added += 1
+
+        sentences = []
+        for relation, expr in exprs:
+            # Only URIRef/BNode class expressions are sensible; others ignored
+            sentences.append(_render_equiv_or_sub_sentence(g, cls, expr, relation))
+
+        # Dedup + punctuation + AUTOGEN token
+        sentences = sentences_unique_preserve_order([s.strip() for s in sentences if s and s.strip()])
+        body = " ".join(s if s.endswith('.') else s + '.' for s in sentences)
+        text = f"{body} ⟦AUTOGEN:P1:{today_iso}⟧"
+
+        g.add((cls, SKOS.scopeNote, Literal(text)))
+
+    return added, updated
+
+
 def add_object_property_definitions(g: Graph, today_iso: str):
     """Generate autogen skos:definition for object properties following Michael's guidelines."""
     # Local helpers (kept inside to avoid polluting module namespace)
@@ -256,16 +526,29 @@ def add_object_property_definitions(g: Graph, today_iso: str):
         domains = [d for d in g.objects(p, RDFS.domain)]
         ranges  = [r for r in g.objects(p, RDFS.range)]
 
-        def _phrase(vals):
-            if len(vals) == 1 and isinstance(vals[0], URIRef):
-                return _render_class_expr(vals[0])
-            # Multiple domain/range triples ⇒ intersection per RDFS semantics
-            only_uris = [v for v in vals if isinstance(v, URIRef)]
-            return _render_multi_domains_ranges(only_uris)
+        def _join_as_intersection(labels):
+            if not labels:
+                return "Thing"
+            if len(labels) == 1:
+                return labels[0]
+            if len(labels) == 2:
+                return f"both {labels[0]} and {labels[1]}"
+            mid = ", ".join(labels[:-1])
+            return f"all of {mid}, and {labels[-1]}"
 
-        d_txt = _phrase(domains) if domains else "Thing"
-        r_txt = _phrase(ranges)  if ranges  else "Thing"
+        def _phrase(vals):
+            if not vals:
+                return "Thing"
+            if len(vals) == 1:
+                return _render_class_expr(vals[0])  # works for URIRef or BNode
+            # Multiple domain/range triples ⇒ intersection per RDFS
+            rendered = [_render_class_expr(v) for v in vals]
+            return _join_as_intersection(rendered)
+
+        d_txt = _phrase(domains)
+        r_txt = _phrase(ranges)
         return f"a relation between {d_txt} and {r_txt}"
+
 
     def _property_characteristics(p: URIRef):
         sents = []
@@ -385,6 +668,12 @@ def main_cli():
         default="overwrite",
         help="Behavior if the output file already exists. Default: overwrite"
     )
+    parser.add_argument(
+        "--no-scope-notes",
+        action="store_true",
+        help="Do not generate skos:scopeNote technical sentences for class axioms."
+    )
+
     args = parser.parse_args()
 
     in_path = Path(args.input)
@@ -401,6 +690,9 @@ def main_cli():
     dp_added, dp_updated = add_datatype_property_definitions(g, today)
     op_added, op_updated = add_object_property_definitions(g, today)
 
+    cls_axiom_added, cls_axiom_updated = add_class_axiom_scope_notes(
+        g, today, include_scope_note=(not args.no_scope_notes)
+    )
 
     out_path = Path(args.output) if args.output else in_path.with_name(in_path.stem + "_with_documentation.ttl")
 
@@ -425,6 +717,8 @@ def main_cli():
     print(f"Classes:    added {cls_added}" + (f", updated {cls_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Data props: added {dp_added}" + (f", updated {dp_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Object props: added {op_added}" + (f", updated {op_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
+    print(f"Class axioms (scopeNote): added {cls_axiom_added}" + (f", updated {cls_axiom_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
+
 
     print(f"Wrote: {out_path}")
 

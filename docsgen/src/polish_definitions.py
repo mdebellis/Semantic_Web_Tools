@@ -48,12 +48,7 @@ INSTRUCTIONS = (
 # Helpers
 # --------------------
 def split_autogen_text(raw: str):
-    """
-    Return (core_text, token) if this is an autogen-P1 string; otherwise (None, None).
-    Supports:
-      - New style: "... ⟦AUTOGEN:P1:YYYY-MM-DD⟧"
-      - Legacy:    "... Auto generated comment YYYY-MM-DD"
-    """
+    """Return (core_text, token) if this is an autogen-P1 string; otherwise (None, None)."""
     # Already P2? Skip
     if P2_TOKEN_RE.search(raw):
         return None, None
@@ -67,7 +62,6 @@ def split_autogen_text(raw: str):
     # Legacy support
     if LEGACY_MARKER_RE.search(raw):
         core = LEGACY_MARKER_RE.sub("", raw).rstrip()
-        # fabricate a token date if none present
         today = date.today().isoformat()
         token = f"⟦AUTOGEN:P1:{today}⟧"
         return core, token
@@ -75,9 +69,7 @@ def split_autogen_text(raw: str):
     return None, None
 
 def polish_text(client: OpenAI, text: str) -> str:
-    """
-    Call OpenAI Responses API to copy-edit `text`. Returns polished text.
-    """
+    """Call OpenAI Responses API to copy-edit `text`. Returns polished text."""
     resp = client.responses.create(
         model=MODEL_NAME,
         instructions=INSTRUCTIONS,
@@ -97,19 +89,26 @@ def main(in_path: str):
 
     g = Graph()
     g.parse(in_path.as_posix(), format="turtle")
+    print(f"[INFO] Loaded graph with {len(g)} triples from {in_path}")
+
+    # Collect all definitions
+    targets = [(cls, lit) for cls, _, lit in g.triples((None, SKOS.definition, None)) if isinstance(lit, Literal)]
+    print(f"[INFO] Found {len(targets)} definitions. Scanning for AUTOGEN markers...")
 
     updated = 0
-    for cls, _, lit in list(g.triples((None, SKOS.definition, None))):
-        if not isinstance(lit, Literal):
-            continue
+    total_targets = len(targets)
 
+    for i, (cls, lit) in enumerate(targets, 1):
         core, token = split_autogen_text(str(lit))
         if core is None:
             continue  # not our target
 
+        print(f"[{i}/{total_targets}] Polishing definition for {cls}")
+
         # Copy-edit the core text via LLM
         try:
             polished = polish_text(client, core)
+            print(f"    → Done (preview): {polished[:60]}...")
         except Exception as e:
             print(f"[WARN] Skipping one definition due to API error: {e}")
             continue
@@ -118,13 +117,14 @@ def main(in_path: str):
         p2 = f"⟦AUTOGEN:P2:{date.today().isoformat()}⟧"
         new_text = f"{polished} {p2}"
 
-        # Preserve language tag option
         lang = "en" if USE_LANGUAGE_TAGS else None
 
-        # Remove old literal; add new one
         g.remove((cls, SKOS.definition, lit))
         g.add((cls, SKOS.definition, Literal(new_text, lang=lang)))
         updated += 1
+
+        if i % 10 == 0:
+            print(f"[INFO] Processed {i} definitions so far...")
 
     # Output file name: add "_polished" before extension
     stem = in_path.stem
@@ -132,8 +132,8 @@ def main(in_path: str):
     out_path = in_path.with_name(out_name)
     g.serialize(destination=out_path.as_posix(), format="turtle")
 
-    print(f"Polished {updated} auto-generated definition(s).")
-    print(f"Wrote: {out_path}")
+    print(f"[INFO] Polished {updated} auto-generated definition(s).")
+    print(f"[INFO] Wrote: {out_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 1 and len(sys.argv) != 2:
