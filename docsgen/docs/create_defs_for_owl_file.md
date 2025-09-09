@@ -292,8 +292,6 @@ docsgen/
 
 ## License
 
-Add your project’s license here (e.g., Apache-2.0, MIT), or link to the repo’s LICENSE file.
+[Apache 2.0 License](https://github.com/mdebellis/Semantic_Web_Tools/edit/main/LICENSE)
 
----
 
-**That’s it.** Drop this file into your repo wiki or `docs/` directory as `create_defs_for_owl_file.md`.
