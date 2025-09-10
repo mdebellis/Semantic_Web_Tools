@@ -47,6 +47,42 @@ INSTRUCTIONS = (
 # --------------------
 # Helpers
 # --------------------
+def _is_proper_subclass_of(g: Graph, a: URIRef, b: URIRef) -> bool:
+    """True iff a ⊑⁺ b (proper subclass via one-or-more rdfs:subClassOf hops)."""
+    if a == b:
+        return False
+    seen = set()
+    stack = [a]
+    while stack:
+        cur = stack.pop()
+        if cur == b:
+            return True
+        if cur in seen:
+            continue
+        seen.add(cur)
+        for _, _, sup in g.triples((cur, RDFS.subClassOf, None)):
+            if isinstance(sup, URIRef):
+                stack.append(sup)
+    return False
+
+def minimal_named_parents(g: Graph, cls: URIRef) -> list[URIRef]:
+    """
+    From (reasoned) rdfs:subClassOf assertions on cls, return only the
+    minimal named parents (closest named supers). Drops owl:Thing and cls.
+    """
+    candidates = {
+        sup for _, _, sup in g.triples((cls, RDFS.subClassOf, None))
+        if isinstance(sup, URIRef) and sup not in (OWL.Thing, cls)
+    }
+    # Drop any candidate that is an ancestor of another candidate.
+    pruned = set(candidates)
+    for a in list(candidates):
+        for b in candidates:
+            if a != b and _is_proper_subclass_of(g, b, a):
+                pruned.discard(a)
+                break
+    return sorted(pruned, key=lambda u: str(u))
+
 def split_autogen_text(raw: str):
     """Return (core_text, token) if this is an autogen-P1 string; otherwise (None, None)."""
     # Already P2? Skip

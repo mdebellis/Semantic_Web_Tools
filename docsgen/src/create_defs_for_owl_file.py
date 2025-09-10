@@ -17,6 +17,7 @@ Idempotence:
   - Set OVERWRITE_EXISTING_AUTOGEN = True to replace prior autogen definitions.
 
 Usage:
+  Make sure you are in the directory: .../GitHub/Semantic_Web_Tools/docsgen/src
   python create_defs_for_owl_file.py People_Ontology.ttl
 """
 
@@ -25,10 +26,11 @@ import re
 from pathlib import Path
 from datetime import date
 
-from rdflib import Graph, Namespace, RDF, RDFS, OWL, URIRef, Literal
+from rdflib import Graph, RDF, RDFS, OWL, URIRef, Literal
 from rdflib.namespace import SKOS, split_uri, XSD
 import argparse
 from datetime import datetime
+from owlrl import DeductiveClosure, OWLRL_Semantics
 
 # --------------------
 # Settings
@@ -39,6 +41,7 @@ OVERWRITE_EXISTING_AUTOGEN = False  # True -> replace existing ⟦AUTOGEN:*⟧ d
 P1_TOKEN_RE = re.compile(r"\u27E6AUTOGEN:P1:\d{4}-\d{2}-\d{2}\u27E7")
 P2_TOKEN_RE = re.compile(r"\u27E6AUTOGEN:P2:\d{4}-\d{2}-\d{2}\u27E7")
 LEGACY_MARKER_RE = re.compile(r"Auto generated comment\s+\d{4}-\d{2}-\d{2}\s*$", re.IGNORECASE)
+
 
 # --------------------
 # Helpers
@@ -56,6 +59,7 @@ def label_for(g: Graph, uri: URIRef) -> str:
         local = u.split('#')[-1] if '#' in u else u.rsplit('/', 1)[-1]
     return local.replace('_', ' ')
 
+
 def qname_or_str(g: Graph, uri: URIRef) -> str:
     """Return a compact QName if possible (e.g., xsd:decimal); else fallback to local name."""
     try:
@@ -68,10 +72,10 @@ def qname_or_str(g: Graph, uri: URIRef) -> str:
     return label_for(g, uri).replace(' ', '_')
 
 def direct_superclasses(g: Graph, cls: URIRef):
-    """All explicit URI superclasses (exclude bnodes/restrictions and owl:Nothing)."""
+    """All explicit URI superclasses (exclude bnodes/restrictions, owl:Nothing, and reflexive cls⊑cls)."""
     supers = []
     for _, _, sup in g.triples((cls, RDFS.subClassOf, None)):
-        if isinstance(sup, URIRef) and sup != OWL.Nothing:
+        if isinstance(sup, URIRef) and sup not in (OWL.Nothing, cls):
             supers.append(sup)
     # stable order
     seen = set()
@@ -82,6 +86,48 @@ def direct_superclasses(g: Graph, cls: URIRef):
             seen.add(s)
     return ordered
 
+def minimal_named_parents(g: Graph, cls: URIRef):
+    """
+    Return the minimal set of *named* superclasses for `cls` from the (reasoned) graph,
+    excluding OWL.Thing, OWL.Nothing, and reflexive cls ⊑ cls.
+    A parent P is kept only if there is no other parent Q (Q != P) such that P ⊑* Q.
+    """
+    # candidate parents: named superclasses only
+    parents = [
+        p for p in g.objects(cls, RDFS.subClassOf)
+        if isinstance(p, URIRef) and p not in (OWL.Thing, OWL.Nothing, cls)
+    ]
+    if not parents:
+        return []
+
+    def is_subclass_of(a: URIRef, b: URIRef) -> bool:
+        """True iff a ⊑* b in g (reflexive-transitive)."""
+        if a == b:
+            return True
+        seen = set([a])
+        stack = [a]
+        while stack:
+            cur = stack.pop()
+            for sup in g.objects(cur, RDFS.subClassOf):
+                if not isinstance(sup, URIRef):
+                    continue
+                if sup == b:
+                    return True
+                if sup not in seen:
+                    seen.add(sup)
+                    stack.append(sup)
+        return False
+
+    # keep only minimal parents
+    minimal = []
+    for p in parents:
+        if any(q != p and is_subclass_of(p, q) for q in parents):
+            continue  # p is redundant (it’s below another parent)
+        minimal.append(p)
+    return minimal
+
+
+
 def has_autogen_def(g: Graph, subject: URIRef) -> bool:
     """True if subject already has a skos:definition with an AUTOGEN token (P1 or P2) or legacy marker."""
     for _, _, val in g.triples((subject, SKOS.definition, None)):
@@ -90,6 +136,7 @@ def has_autogen_def(g: Graph, subject: URIRef) -> bool:
             if P1_TOKEN_RE.search(txt) or P2_TOKEN_RE.search(txt) or LEGACY_MARKER_RE.search(txt):
                 return True
     return False
+
 
 def remove_autogen_defs(g: Graph, subject: URIRef):
     """Remove existing AUTOGEN skos:definition(s) for subject."""
@@ -102,6 +149,7 @@ def remove_autogen_defs(g: Graph, subject: URIRef):
     for t in to_remove:
         g.remove(t)
 
+
 def join_or(items):
     """Join items with ' or ' (no Oxford comma, minimalism)."""
     if not items:
@@ -109,6 +157,7 @@ def join_or(items):
     if len(items) == 1:
         return items[0]
     return " or ".join(items)
+
 
 def sentences_unique_preserve_order(sentences):
     seen = set()
@@ -118,6 +167,60 @@ def sentences_unique_preserve_order(sentences):
             out.append(s)
             seen.add(s)
     return out
+
+
+def super_properties_transitive(g: Graph, p: URIRef):
+    """All super-properties of p via transitive rdfs:subPropertyOf (including direct ones)."""
+    visited, stack = set(), [p]
+    supers = set()
+    while stack:
+        cur = stack.pop()
+        if cur in visited:
+            continue
+        visited.add(cur)
+        for sup in g.objects(cur, RDFS.subPropertyOf):
+            if isinstance(sup, URIRef):
+                supers.add(sup)
+                stack.append(sup)
+    return supers
+
+
+def eq_properties(g: Graph, p: URIRef):
+    eq = set(g.objects(p, OWL.equivalentProperty)) | set(g.subjects(OWL.equivalentProperty, p))
+    return {q for q in eq if isinstance(q, URIRef)}
+
+
+def property_frontier(g: Graph, p: URIRef):
+    """
+    Fixed-point closure over: {p} ∪ eq(p) ∪ super*(p) ∪ eq(super*(p)) ∪ super*(eq(...)) ...
+    """
+    frontier = {p}
+    changed = True
+    while changed:
+        changed = False
+        new = set()
+        for q in list(frontier):
+            new |= super_properties_transitive(g, q)
+            new |= eq_properties(g, q)
+        if not new.issubset(frontier):
+            frontier |= new
+            changed = True
+    return frontier
+
+
+def effective_domains(g: Graph, p: URIRef):
+    doms = set()
+    for prop in property_frontier(g, p):
+        doms.update(g.objects(prop, RDFS.domain))
+    return list(doms)
+
+
+def effective_ranges(g: Graph, p: URIRef):
+    rngs = set()
+    for prop in property_frontier(g, p):
+        rngs.update(g.objects(prop, RDFS.range))
+    return list(rngs)
+
 
 # ---------- Class Axiom Rendering (technical) ----------
 
@@ -129,6 +232,7 @@ def _render_rdf_list(g: Graph, head: URIRef):
             members.append(first)
         head = g.value(head, RDF.rest)
     return members
+
 
 def _render_datatype_range(g: Graph, node) -> str:
     """
@@ -189,16 +293,35 @@ def _render_class_expr_technical(g: Graph, expr: URIRef) -> str:
     """
     Deterministic, technical rendering for a subset of class expressions:
       - Named class -> its label
-      - owl:intersectionOf([...])
+      - owl:unionOf([...])  -> "either A or B"
+      - owl:intersectionOf([...]) -> "both A and B" / "all of ..."
+      - owl:oneOf([...])    -> "either a or b" (enumeration of individuals)
       - owl:Restriction on owl:onProperty with some/all/cardinality variants
+      - Fallback for unhandled blank nodes -> "an anonymous class expression"
     """
-    # unionOf / complementOf are out-of-scope for v1 (can be added later)
+
+    def _either_join(parts: list[str]) -> str:
+        if not parts:
+            return ""
+        if len(parts) == 1:
+            return parts[0]
+        if len(parts) == 2:
+            return f"either {parts[0]} or {parts[1]}"
+        mid = ", ".join(parts[:-1])
+        return f"either {mid}, or {parts[-1]}"
+
+    # unionOf
+    union = g.value(expr, OWL.unionOf)
+    if union:
+        items = [_render_class_expr_technical(g, m) for m in _render_rdf_list(g, union)]
+        items = [i for i in items if i]
+        return _either_join(items)
+
+    # intersectionOf
     inter = g.value(expr, OWL.intersectionOf)
     if inter:
-        parts = []
-        for m in _render_rdf_list(g, inter):
-            parts.append(_render_class_expr_technical(g, m))
-        # Technical joiner: keep "both ... and ..." for 2, or comma + and for 3+
+        parts = [_render_class_expr_technical(g, m) for m in _render_rdf_list(g, inter)]
+        parts = [p for p in parts if p]
         if len(parts) == 1:
             return parts[0]
         if len(parts) == 2:
@@ -206,7 +329,20 @@ def _render_class_expr_technical(g: Graph, expr: URIRef) -> str:
         mid = ", ".join(parts[:-1])
         return f"all of {mid}, and {parts[-1]}"
 
-    # Restriction
+    # oneOf (enumeration of individuals)
+    oneof = g.value(expr, OWL.oneOf)
+    if oneof:
+        labels = []
+        for m in _render_rdf_list(g, oneof):
+            if isinstance(m, URIRef):
+                labels.append(label_for(g, m))
+            else:
+                # Literal or bnode individual; show as string safely
+                labels.append(str(m))
+        labels = [l for l in labels if l]
+        return _either_join(labels)
+
+    # Restriction (unchanged from your version)
     if (expr, RDF.type, OWL.Restriction) in g:
         p = g.value(expr, OWL.onProperty)
         p_label = label_for(g, p) if isinstance(p, URIRef) else "<?>"
@@ -216,7 +352,7 @@ def _render_class_expr_technical(g: Graph, expr: URIRef) -> str:
         qmin  = g.value(expr, OWL.minQualifiedCardinality)
         qmax  = g.value(expr, OWL.maxQualifiedCardinality)
         qcls  = g.value(expr, OWL.onClass)
-        qdr = g.value(expr, OWL.onDataRange)
+        qdr   = g.value(expr, OWL.onDataRange)
 
         # Unqualified cardinalities
         ucard = g.value(expr, OWL.cardinality)
@@ -228,11 +364,9 @@ def _render_class_expr_technical(g: Graph, expr: URIRef) -> str:
         hasv  = g.value(expr, OWL.hasValue)
         hasself = (expr, OWL.hasSelf, Literal(True)) in g
 
-        # Helpers
         def cls_txt(c):
             return label_for(g, c) if isinstance(c, URIRef) else "Thing"
 
-        # Order: explicit value/self, qualified card, unqualified, then some/all
         if hasv is not None:
             obj_txt = label_for(g, hasv) if isinstance(hasv, URIRef) else str(hasv)
             return f"has ‘{p_label}’ value {obj_txt}"
@@ -240,63 +374,45 @@ def _render_class_expr_technical(g: Graph, expr: URIRef) -> str:
         if hasself:
             return f"is related to itself by ‘{p_label}’"
 
-        # Object-side qualified cardinalities (only if onClass is present)
         if qcard is not None and qcls is not None:
-            n = int(str(qcard))
-            return f"has exactly {n} ‘{p_label}’ to {cls_txt(qcls)}"
+            n = int(str(qcard));  return f"has exactly {n} ‘{p_label}’ to {cls_txt(qcls)}"
+        if qmin  is not None and qcls is not None:
+            n = int(str(qmin));   return f"has at least {n} ‘{p_label}’ to {cls_txt(qcls)}"
+        if qmax  is not None and qcls is not None:
+            n = int(str(qmax));   return f"has at most {n} ‘{p_label}’ to {cls_txt(qcls)}"
 
-        if qmin is not None and qcls is not None:
-            n = int(str(qmin))
-            return f"has at least {n} ‘{p_label}’ to {cls_txt(qcls)}"
-
-        if qmax is not None and qcls is not None:
-            n = int(str(qmax))
-            return f"has at most {n} ‘{p_label}’ to {cls_txt(qcls)}"
-
-        # Data-side qualified cardinalities (onDataRange)
         if qcard is not None and qdr is not None:
-            n = int(str(qcard))
-            return f"has exactly {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
-
-        if qmin is not None and qdr is not None:
-            n = int(str(qmin))
-            return f"has at least {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
-
-        if qmax is not None and qdr is not None:
-            n = int(str(qmax))
-            return f"has at most {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
+            n = int(str(qcard));  return f"has exactly {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
+        if qmin  is not None and qdr is not None:
+            n = int(str(qmin));   return f"has at least {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
+        if qmax  is not None and qdr is not None:
+            n = int(str(qmax));   return f"has at most {n} ‘{p_label}’ values that are {_render_datatype_range(g, qdr)}"
 
         if ucard is not None:
-            n = int(str(ucard))
-            return f"has exactly {n} ‘{p_label}’"
-
-        if umin is not None:
-            n = int(str(umin))
-            return f"has at least {n} ‘{p_label}’"
-
-        if umax is not None:
-            n = int(str(umax))
-            return f"has at most {n} ‘{p_label}’"
+            n = int(str(ucard));  return f"has exactly {n} ‘{p_label}’"
+        if umin  is not None:
+            n = int(str(umin));   return f"has at least {n} ‘{p_label}’"
+        if umax  is not None:
+            n = int(str(umax));   return f"has at most {n} ‘{p_label}’"
 
         if some is not None:
-            # Data restriction?
             if _is_data_range(g, some) or (isinstance(p, URIRef) and (p, RDF.type, OWL.DatatypeProperty) in g):
                 return f"has at least one ‘{p_label}’ value that is {_render_datatype_range(g, some)}"
-            # Object restriction
             return f"has at least one ‘{p_label}’ to {cls_txt(some)}"
 
         if allv is not None:
-            # Data restriction?
             if _is_data_range(g, allv) or (isinstance(p, URIRef) and (p, RDF.type, OWL.DatatypeProperty) in g):
                 return f"only has ‘{p_label}’ values that are {_render_datatype_range(g, allv)}"
-            # Object restriction
             return f"only has ‘{p_label}’ to {cls_txt(allv)}"
 
-        # Fallback if a rare restriction form appears
         return f"has a restriction on ‘{p_label}’"
 
     # Named class or fallback
-    return label_for(g, expr)
+    if isinstance(expr, URIRef):
+        return label_for(g, expr)
+    return "an anonymous class expression"
+
+
 
 def _render_equiv_or_sub_sentence(g: Graph, cls: URIRef, expr: URIRef, relation: str) -> str:
     """
@@ -308,39 +424,44 @@ def _render_equiv_or_sub_sentence(g: Graph, cls: URIRef, expr: URIRef, relation:
     # Prepend article "A" only when starting the class sentence
     return f"A ‘{cls_label}’ is {relation} {rhs}."
 
+
 # --------------------
-# Generators
+# Generators (READ from g_read; WRITE to g_write)
 # --------------------
-def add_class_definitions(g: Graph, today_iso: str):
-    """Generate autogen skos:definition for classes."""
-    classes = set(s for s in g.subjects(RDF.type, OWL.Class) if isinstance(s, URIRef))
-    classes.update(s for s, _, _ in g.triples((None, RDFS.subClassOf, None)) if isinstance(s, URIRef))
+
+def add_class_definitions(g_read: Graph, g_write: Graph, today_iso: str):
+    """Generate autogen skos:definition for classes, using minimal named parents from the reasoned graph."""
+    classes = set(s for s in g_read.subjects(RDF.type, OWL.Class) if isinstance(s, URIRef))
+    classes.update(s for s, _, _ in g_read.triples((None, RDFS.subClassOf, None)) if isinstance(s, URIRef))
     classes.discard(OWL.Thing)
     classes.discard(OWL.Nothing)
 
     added = updated = 0
     for cls in sorted(classes, key=lambda u: str(u)):
-        if has_autogen_def(g, cls) and not OVERWRITE_EXISTING_AUTOGEN:
+        # Check/update against the graph we will serialize
+        if has_autogen_def(g_write, cls) and not OVERWRITE_EXISTING_AUTOGEN:
             continue
-        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g, cls):
-            remove_autogen_defs(g, cls)
+        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g_write, cls):
+            remove_autogen_defs(g_write, cls)
             updated += 1
         else:
             added += 1
 
-        supers = direct_superclasses(g, cls) or [OWL.Thing]
-        cls_label = label_for(g, cls)
+        cls_label = label_for(g_read, cls)
+        parents = minimal_named_parents(g_read, cls)
 
-        sentences = [f"A {cls_label} is a kind of {label_for(g, s)}." for s in supers]
-        text = " ".join(sentences) + f" ⟦AUTOGEN:P1:{today_iso}⟧"
+        sentences = [f"A {cls_label} is a kind of {label_for(g_read, p)}." for p in parents]
+        # If no named parents other than Thing were found, emit no parent sentences.
+        text = (" ".join(sentences) + (" " if sentences else "")) + f"⟦AUTOGEN:P1:{today_iso}⟧"
 
-        g.add((cls, SKOS.definition, Literal(text)))
+        g_write.add((cls, SKOS.definition, Literal(text)))
     return added, updated
 
 
-def add_datatype_property_definitions(g: Graph, today_iso: str):
+
+def add_datatype_property_definitions(g_read: Graph, g_write: Graph, today_iso: str):
     """Generate autogen skos:definition for datatype properties (T1 template)."""
-    props = set(s for s in g.subjects(RDF.type, OWL.DatatypeProperty) if isinstance(s, URIRef))
+    props = set(s for s in g_read.subjects(RDF.type, OWL.DatatypeProperty) if isinstance(s, URIRef))
 
     # Exclude top/bottom data property if present
     try:
@@ -351,23 +472,22 @@ def add_datatype_property_definitions(g: Graph, today_iso: str):
 
     added = updated = 0
     for prop in sorted(props, key=lambda u: str(u)):
-        if has_autogen_def(g, prop) and not OVERWRITE_EXISTING_AUTOGEN:
+        if has_autogen_def(g_write, prop) and not OVERWRITE_EXISTING_AUTOGEN:
             continue
-        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g, prop):
-            remove_autogen_defs(g, prop)
+        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g_write, prop):
+            remove_autogen_defs(g_write, prop)
             updated += 1
         else:
             added += 1
 
-        prop_label = label_for(g, prop)
+        prop_label = label_for(g_read, prop)
 
-        # domains: URIRefs only (skip bnodes/complex expressions)
-        domains = [d for d in g.objects(prop, RDFS.domain) if isinstance(d, URIRef)]
-        # ranges: URIRefs only; render as QName if possible
-        ranges = [r for r in g.objects(prop, RDFS.range) if isinstance(r, URIRef)]
+        # Domains/ranges from effective (super* + equivalent) on the REASONED graph
+        domains = [d for d in effective_domains(g_read, prop) if isinstance(d, URIRef)]
+        ranges = [r for r in effective_ranges(g_read, prop) if isinstance(r, URIRef)]
+
         if ranges:
-            range_text = join_or([qname_or_str(g, r) for r in ranges])
-            # simple article heuristic; LLM pass will polish if needed
+            range_text = join_or([qname_or_str(g_read, r) for r in ranges])
             article = "an" if range_text[:1].lower() in set("aeioux") else "a"
             rng_phrase = f"as {article} {range_text} value."
         else:
@@ -376,119 +496,103 @@ def add_datatype_property_definitions(g: Graph, today_iso: str):
         sentences = []
         if domains:
             for d in domains:
-                d_label = label_for(g, d)
+                d_label = label_for(g_read, d)
                 sentences.append(f"The data property {prop_label} records a {d_label}'s {prop_label} {rng_phrase}")
         else:
             sentences.append(f"The data property {prop_label} records the {prop_label} {rng_phrase}")
 
-        # ensure uniqueness & tidy join
         sentences = sentences_unique_preserve_order([s.strip() if s.endswith('.') else s.strip() for s in sentences])
         text_body = " ".join(s if s.endswith('.') else s + '.' for s in sentences)
         text = f"{text_body} ⟦AUTOGEN:P1:{today_iso}⟧"
 
-        g.add((prop, SKOS.definition, Literal(text)))
-
+        g_write.add((prop, SKOS.definition, Literal(text)))
     return added, updated
 
-def add_class_axiom_scope_notes(g: Graph, today_iso: str, include_scope_note: bool = True):
+
+def add_class_axiom_scope_notes(g_read: Graph, g_write: Graph, today_iso: str, include_scope_note: bool = True):
     """
     Generate AUTOGEN technical sentences for class axioms into skos:scopeNote.
-    Patterns supported (v1): intersectionOf of named classes and Restrictions; single Restrictions.
-    Writes one or more sentences for each owl:equivalentClass / rdfs:subClassOf expression.
-    Respects OVERWRITE_EXISTING_AUTOGEN for scopeNote literals containing AUTOGEN tokens.
+    Reads axioms from g_read; writes notes to g_write.
     """
     if not include_scope_note:
         return 0, 0
 
-    # Local helpers for AUTOGEN detection on scopeNote
-    def _has_autogen_scope(g: Graph, s: URIRef) -> bool:
-        for _, _, val in g.triples((s, SKOS.scopeNote, None)):
+    def _has_autogen_scope(gw: Graph, s: URIRef) -> bool:
+        for _, _, val in gw.triples((s, SKOS.scopeNote, None)):
             if isinstance(val, Literal):
                 txt = str(val)
                 if P1_TOKEN_RE.search(txt) or P2_TOKEN_RE.search(txt) or LEGACY_MARKER_RE.search(txt):
                     return True
         return False
 
-    def _remove_autogen_scope(g: Graph, s: URIRef):
+    def _remove_autogen_scope(gw: Graph, s: URIRef):
         to_remove = []
-        for _, p, val in g.triples((s, SKOS.scopeNote, None)):
+        for _, p, val in gw.triples((s, SKOS.scopeNote, None)):
             if isinstance(val, Literal):
                 txt = str(val)
                 if P1_TOKEN_RE.search(txt) or P2_TOKEN_RE.search(txt) or LEGACY_MARKER_RE.search(txt):
                     to_remove.append((s, p, val))
         for t in to_remove:
-            g.remove(t)
+            gw.remove(t)
 
-    classes = set(s for s in g.subjects(RDF.type, OWL.Class) if isinstance(s, URIRef))
-    classes.discard(OWL.Thing)
-    classes.discard(OWL.Nothing)
+    classes = set(s for s in g_read.subjects(RDF.type, OWL.Class) if isinstance(s, URIRef))
+    classes.discard(OWL.Thing); classes.discard(OWL.Nothing)
 
     added = updated = 0
-
     for cls in sorted(classes, key=lambda u: str(u)):
-        # Gather axiom expressions
         exprs = []
 
-        # owl:equivalentClass
-        for _, _, e in g.triples((cls, OWL.equivalentClass, None)):
-            if isinstance(e, URIRef):
-                exprs.append(("equivalent to", e))
-            # If it's a bnode, rdflib still gives a BNode here; include anyway
-            else:
-                exprs.append(("equivalent to", e))
+        # owl:equivalentClass (skip reflexive cls ≡ cls)
+        for _, _, e in g_read.triples((cls, OWL.equivalentClass, None)):
+            if e == cls:
+                continue
+            exprs.append(("equivalent to", e))
 
-        # rdfs:subClassOf
-        for _, _, e in g.triples((cls, RDFS.subClassOf, None)):
-            # Skip trivial OWL.Nothing and top things here
-            if e == OWL.Nothing:
+        # rdfs:subClassOf (skip Nothing, Thing, and reflexive cls ⊑ cls)
+        for _, _, e in g_read.triples((cls, RDFS.subClassOf, None)):
+            if e in (OWL.Nothing, OWL.Thing, cls):
                 continue
             exprs.append(("a kind of", e))
 
         if not exprs:
-            continue  # nothing to render
-
-        # Overwrite policy per AUTOGEN marker
-        if _has_autogen_scope(g, cls) and not OVERWRITE_EXISTING_AUTOGEN:
             continue
-        if OVERWRITE_EXISTING_AUTOGEN and _has_autogen_scope(g, cls):
-            _remove_autogen_scope(g, cls)
-            updated += 1
+
+        if _has_autogen_scope(g_write, cls) and not OVERWRITE_EXISTING_AUTOGEN:
+            continue
+        if OVERWRITE_EXISTING_AUTOGEN and _has_autogen_scope(g_write, cls):
+            _remove_autogen_scope(g_write, cls); updated += 1
         else:
             added += 1
 
-        sentences = []
-        for relation, expr in exprs:
-            # Only URIRef/BNode class expressions are sensible; others ignored
-            sentences.append(_render_equiv_or_sub_sentence(g, cls, expr, relation))
-
-        # Dedup + punctuation + AUTOGEN token
+        sentences = [_render_equiv_or_sub_sentence(g_read, cls, e, rel) for (rel, e) in exprs]
         sentences = sentences_unique_preserve_order([s.strip() for s in sentences if s and s.strip()])
         body = " ".join(s if s.endswith('.') else s + '.' for s in sentences)
         text = f"{body} ⟦AUTOGEN:P1:{today_iso}⟧"
 
-        g.add((cls, SKOS.scopeNote, Literal(text)))
+        g_write.add((cls, SKOS.scopeNote, Literal(text)))
 
     return added, updated
 
 
-def add_object_property_definitions(g: Graph, today_iso: str):
-    """Generate autogen skos:definition for object properties following Michael's guidelines."""
+
+def add_object_property_definitions(g_read: Graph, g_write: Graph, today_iso: str):
+    """Generate autogen skos:definition for object properties (reads from g_read, writes to g_write)."""
     # Local helpers (kept inside to avoid polluting module namespace)
     def _label_for(u: URIRef) -> str:
-        return label_for(g, u)
+        return label_for(g_read, u)
 
     def _render_list_members(head: URIRef):
         members = []
         while head and head != RDF.nil:
-            first = g.value(head, RDF.first)
+            first = g_read.value(head, RDF.first)
             if first is not None:
                 members.append(first)
-            head = g.value(head, RDF.rest)
+            head = g_read.value(head, RDF.rest)
         return members
 
     def _render_class_expr(cls: URIRef) -> str:
         # unionOf → "either A or B"
-        union_list = g.value(cls, OWL.unionOf)
+        union_list = g_read.value(cls, OWL.unionOf)
         if union_list:
             labels = [_label_for(m) for m in _render_list_members(union_list)]
             if len(labels) == 1:
@@ -499,7 +603,7 @@ def add_object_property_definitions(g: Graph, today_iso: str):
             return f"either {mid}, or {labels[-1]}"
 
         # intersectionOf → "both A and B" / "all of ..."
-        inter_list = g.value(cls, OWL.intersectionOf)
+        inter_list = g_read.value(cls, OWL.intersectionOf)
         if inter_list:
             labels = [_label_for(m) for m in _render_list_members(inter_list)]
             if len(labels) == 1:
@@ -511,20 +615,9 @@ def add_object_property_definitions(g: Graph, today_iso: str):
 
         return _label_for(cls)
 
-    def _render_multi_domains_ranges(vals):
-        labels = [_label_for(v) for v in vals]
-        if not labels:
-            return "Thing"
-        if len(labels) == 1:
-            return labels[0]
-        if len(labels) == 2:
-            return f"both {labels[0]} and {labels[1]}"
-        mid = ", ".join(labels[:-1])
-        return f"all of {mid}, and {labels[-1]}"
-
     def _first_sentence_relation(p: URIRef) -> str:
-        domains = [d for d in g.objects(p, RDFS.domain)]
-        ranges  = [r for r in g.objects(p, RDFS.range)]
+        domains = effective_domains(g_read, p)
+        ranges = effective_ranges(g_read, p)
 
         def _join_as_intersection(labels):
             if not labels:
@@ -549,22 +642,21 @@ def add_object_property_definitions(g: Graph, today_iso: str):
         r_txt = _phrase(ranges)
         return f"a relation between {d_txt} and {r_txt}"
 
-
     def _property_characteristics(p: URIRef):
         sents = []
-        if (p, RDF.type, OWL.FunctionalProperty) in g:
+        if (p, RDF.type, OWL.FunctionalProperty) in g_read:
             sents.append("It is functional which means that each subject can relate to at most one object by this property.")
-        if (p, RDF.type, OWL.InverseFunctionalProperty) in g:
+        if (p, RDF.type, OWL.InverseFunctionalProperty) in g_read:
             sents.append("It is inverse functional which means that each object can be related to by at most one subject via this property.")
-        if (p, RDF.type, OWL.TransitiveProperty) in g:
+        if (p, RDF.type, OWL.TransitiveProperty) in g_read:
             sents.append("It is transitive which means that if x relates to y and y relates to z, then x relates to z.")
-        if (p, RDF.type, OWL.SymmetricProperty) in g:
+        if (p, RDF.type, OWL.SymmetricProperty) in g_read:
             sents.append("It is symmetric which means that if x relates to y, then y relates to x.")
-        if (p, RDF.type, OWL.AsymmetricProperty) in g:
+        if (p, RDF.type, OWL.AsymmetricProperty) in g_read:
             sents.append("It is asymmetric which means that if x relates to y, then y cannot relate to x by this property.")
-        if (p, RDF.type, OWL.ReflexiveProperty) in g:
+        if (p, RDF.type, OWL.ReflexiveProperty) in g_read:
             sents.append("It is reflexive which means that every individual relates to itself by this property.")
-        if (p, RDF.type, OWL.IrreflexiveProperty) in g:
+        if (p, RDF.type, OWL.IrreflexiveProperty) in g_read:
             sents.append("It is irreflexive which means that no individual relates to itself by this property.")
         return sents
 
@@ -574,8 +666,8 @@ def add_object_property_definitions(g: Graph, today_iso: str):
             return f"‘{name}’"
         return name
 
-    # Gather object properties
-    props = set(s for s in g.subjects(RDF.type, OWL.ObjectProperty) if isinstance(s, URIRef))
+    # Gather object properties from the REASONED graph
+    props = set(s for s in g_read.subjects(RDF.type, OWL.ObjectProperty) if isinstance(s, URIRef))
     # Exclude top/bottom object property if present
     try:
         props.discard(OWL.topObjectProperty)
@@ -586,11 +678,11 @@ def add_object_property_definitions(g: Graph, today_iso: str):
     added = updated = 0
 
     for p in sorted(props, key=lambda u: str(u)):
-        # AUTOGEN overwrite behavior mirrors your other generators
-        if has_autogen_def(g, p) and not OVERWRITE_EXISTING_AUTOGEN:
+        # AUTOGEN overwrite behavior mirrors your other generators (check against WRITE graph)
+        if has_autogen_def(g_write, p) and not OVERWRITE_EXISTING_AUTOGEN:
             continue
-        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g, p):
-            remove_autogen_defs(g, p)
+        if OVERWRITE_EXISTING_AUTOGEN and has_autogen_def(g_write, p):
+            remove_autogen_defs(g_write, p)
             updated += 1
         else:
             added += 1
@@ -603,8 +695,8 @@ def add_object_property_definitions(g: Graph, today_iso: str):
         # First sentence
         parts.append(f"The property {p_label_q} is {_first_sentence_relation(p)}.")
 
-        # Super-properties
-        supers = [s for s in g.objects(p, RDFS.subPropertyOf) if isinstance(s, URIRef)]
+        # Super-properties (skip reflexive p ⊑ p)
+        supers = [s for s in g_read.objects(p, RDFS.subPropertyOf) if isinstance(s, URIRef) and s != p]
         if supers:
             super_labels_q = [_quote_first_use(_label_for(s), seen_labels) for s in supers]
             if len(super_labels_q) == 1:
@@ -617,7 +709,7 @@ def add_object_property_definitions(g: Graph, today_iso: str):
                 parts.append(f"This means that if x {p_label} y then x {s_lbl} y.")
 
         # Sub-properties
-        subs = [s for s in g.subjects(RDFS.subPropertyOf, p) if isinstance(s, URIRef)]
+        subs = [s for s in g_read.subjects(RDFS.subPropertyOf, p) if isinstance(s, URIRef)]
         if subs:
             sub_labels_q = [_quote_first_use(_label_for(s), seen_labels) for s in subs]
             if len(sub_labels_q) == 1:
@@ -630,7 +722,7 @@ def add_object_property_definitions(g: Graph, today_iso: str):
                 parts.append(f"This means that if a subject x {s_lbl} y then x {p_label} y.")
 
         # Inverse (both directions)
-        inverses = set(g.objects(p, OWL.inverseOf)) | set(g.subjects(OWL.inverseOf, p))
+        inverses = set(g_read.objects(p, OWL.inverseOf)) | set(g_read.subjects(OWL.inverseOf, p))
         if inverses:
             inv = next(iter(inverses))
             inv_lbl = _label_for(inv)
@@ -645,7 +737,7 @@ def add_object_property_definitions(g: Graph, today_iso: str):
         body = " ".join(s if s.endswith('.') else s + '.' for s in parts)
         text = f"{body} ⟦AUTOGEN:P1:{today_iso}⟧"
 
-        g.add((p, SKOS.definition, Literal(text)))
+        g_write.add((p, SKOS.definition, Literal(text)))
 
     return added, updated
 
@@ -681,17 +773,28 @@ def main_cli():
         print(f"Input file not found: {in_path}", file=sys.stderr)
         sys.exit(1)
 
-    g = Graph()
-    g.parse(in_path.as_posix(), format="turtle")
+    # Load base (to be serialized)
+    g_base = Graph()
+    g_base.parse(in_path.as_posix(), format="turtle")
+
+    # Reason on a separate copy (read-only view)
+    g_reason = Graph()
+    g_reason += g_base
+    # Keep axiomatic/datatype entailments out to avoid clutter
+    DeductiveClosure(
+        OWLRL_Semantics,
+        axiomatic_triples=False,
+        datatype_axioms=False
+    ).expand(g_reason)
 
     today = date.today().isoformat()
 
-    cls_added, cls_updated = add_class_definitions(g, today)
-    dp_added, dp_updated = add_datatype_property_definitions(g, today)
-    op_added, op_updated = add_object_property_definitions(g, today)
+    cls_added, cls_updated = add_class_definitions(g_reason, g_base, today)
+    dp_added, dp_updated = add_datatype_property_definitions(g_reason, g_base, today)
+    op_added, op_updated = add_object_property_definitions(g_reason, g_base, today)
 
     cls_axiom_added, cls_axiom_updated = add_class_axiom_scope_notes(
-        g, today, include_scope_note=(not args.no_scope_notes)
+        g_reason, g_base, today, include_scope_note=(not args.no_scope_notes)
     )
 
     out_path = Path(args.output) if args.output else in_path.with_name(in_path.stem + "_with_documentation.ttl")
@@ -712,15 +815,16 @@ def main_cli():
                 sys.exit(4)
         # overwrite: do nothing special
 
-    g.serialize(destination=out_path.as_posix(), format="turtle")
+    g_base.serialize(destination=out_path.as_posix(), format="turtle")
 
     print(f"Classes:    added {cls_added}" + (f", updated {cls_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Data props: added {dp_added}" + (f", updated {dp_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
     print(f"Object props: added {op_added}" + (f", updated {op_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
-    print(f"Class axioms (scopeNote): added {cls_axiom_added}" + (f", updated {cls_axiom_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
-
+    print(f"Class axioms (scopeNote): added {cls_axiom_added}" + (
+        f", updated {cls_axiom_updated}" if OVERWRITE_EXISTING_AUTOGEN else ""))
 
     print(f"Wrote: {out_path}")
+
 
 if __name__ == "__main__":
     main_cli()
